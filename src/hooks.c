@@ -15,14 +15,13 @@ TMHOOK(on_server_started, void,
 {
     server_started = true;
     
-    // TODO: Add SYMCALL macro
-    ((char (*)(unsigned int a1, char a2, int a3, int a4, unsigned int a5, const char *a6, int a7, const char *a8))
-        get_sym_func("?log@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule@1@W4LogAreaID@@IPEBDH4ZZ"))
-        (0, 1, 0, 12, UNKNOWN, "HOOKER->LOG", 114514, "injected!");
-    
-    char (*bedrock_log_log)(unsigned int a1, char a2, int a3, int a4, unsigned int a5, const char *a6, int a7, const char *a8) = 
-        get_sym_func("?log@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule@1@W4LogAreaID@@IPEBDH4ZZ");
-    bedrock_log_log(0, 1, 0, 12, WARN, "HOOKER->LOG", 1919810, "feel free!");
+    TMCALL("?log@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule@1@W4LogAreaID@@IPEBDH4ZZ",
+        char (*)(unsigned int a1, char a2, int a3, int a4, unsigned int a5, const char *a6, int a7, const char *a8),
+        0, 1, 0, 12, UNKNOWN, "HOOKER->LOG", 114514, "injected!");
+
+    TMCALL("?log@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule@1@W4LogAreaID@@IPEBDH4ZZ",
+        char (*)(unsigned int a1, char a2, int a3, int a4, unsigned int a5, const char *a6, int a7, const char *a8),
+        0, 1, 0, 12, WARN, "HOOKER->LOG", 1919810, "feel free!");
 
     on_server_started.original(_this);
 }

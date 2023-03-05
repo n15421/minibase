@@ -75,6 +75,15 @@
     };                                                      \
     ret_type _detour_##name(__VA_ARGS__)
 
+
+#define TMCALL(rva_OR_sym, func_proto, ...)                 \
+    ((func_proto)                                           \
+    (atoi(rva_OR_sym)                                       \
+        ? get_rva_func(atoi(rva_OR_sym))                    \
+        : get_sym_func(rva_OR_sym)))                        \
+    (__VA_ARGS__)
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
