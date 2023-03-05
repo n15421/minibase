@@ -29,9 +29,9 @@ void *get_sym_func(const char *sym)
     {
         printf("Symbol file " SYM_FILE " not found, trying to generate.\n");
 
-        fopen("cvdump.exe", "r")
-            ? system("cvdump.exe -headers -p bedrock_server.pdb > " SYM_FILE )
-            : printf("cvdump.exe not found, please download it from " CVDUMP_URL "\n");
+        fopen(CVDUMP_EXE_PATH, "r")
+            ? system(CVDUMP_EXE_PATH CVDUMP_EXEC_ARGS BDS_PDB_PATH " > " SYM_FILE )
+            : printf(CVDUMP_MISSING_MSG);
         
         fp = fopen(SYM_FILE, "r");
         if (!fp)

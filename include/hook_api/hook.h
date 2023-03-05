@@ -8,7 +8,15 @@
 #include <string.h>
 
 #define SYM_FILE "bedrock_server_sym.txt"
+
 #define CVDUMP_URL "https://raw.github.com/microsoft/microsoft-pdb/master/cvdump/cvdump.exe"
+#define CVDUMP_EXE_PATH "cvdump.exe"
+#define CVDUMP_EXEC_ARGS " -headers -p "
+#define CVDUMP_MISSING_MSG \
+            CVDUMP_EXE_PATH " not found, please download it from " CVDUMP_URL \
+            " and then put it in the same level folder as bedrock_server.pdb\n"
+
+#define BDS_PDB_PATH "bedrock_server.pdb"
 
 #define TMHOOK(name, ret_type, rva_OR_sym, ...)             \
     typedef ret_type (*_##name##_t)(__VA_ARGS__);           \
