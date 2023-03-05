@@ -1,4 +1,3 @@
-#include <hooker/hook_api.h>
 #include <hooker/hooks.h>
 
 bool load_plugin(void);

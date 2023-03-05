@@ -1,6 +1,6 @@
 #pragma once
 #pragma comment(lib, "minhook.x64d.lib")
-#include "../minhook/MinHook.h"
+#include "../../minhook/MinHook.h"
 
 #include <Windows.h>
 
@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define THOOK(name, ret_type, rva_val, ...)                 \
+#define TMHOOK(name, ret_type, rva_val, ...)                \
     typedef ret_type (*name##_t)(__VA_ARGS__);              \
     name##_t original_##name = NULL;                        \
     typedef struct _##name name##_struct;                   \

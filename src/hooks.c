@@ -1,13 +1,13 @@
 #include <hooker/hooks.h>
 
 bool server_started = false;
-THOOK(on_server_started, void, 8903664, uintptr_t _this)
+TMHOOK(on_server_started, void, 8903664, uintptr_t _this)
 {
     server_started = true;
     on_server_started.original(_this);
 }                               
 
-THOOK(on_console_output, bool, 778480, uintptr_t _this, const char *str, size_t size)
+TMHOOK(on_console_output, bool, 778480, uintptr_t _this, const char *str, size_t size)
 {
     if (server_started)
         printf("detour_on_console_output: %s\n", str);
@@ -15,7 +15,7 @@ THOOK(on_console_output, bool, 778480, uintptr_t _this, const char *str, size_t 
     return on_console_output.original(_this, str, size);
 }
 
-THOOK(on_console_input, bool, 489760, uintptr_t _this, const char *str)
+TMHOOK(on_console_input, bool, 489760, uintptr_t _this, const char *str)
 {
     puts("detour_on_console_input: ");
     puts(str);

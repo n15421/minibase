@@ -1,4 +1,4 @@
-#include <hooker/hook_api.h>
+#include <hooker/hook_api/hook.h>
 
 bool hook_func(void *hook_func, void *detour_func, void *original_func)
 {
