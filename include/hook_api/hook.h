@@ -1,6 +1,7 @@
 #pragma once
 #pragma comment(lib, "minhook.x64d.lib")
 #include "../minhook/MinHook.h"
+#include "cvdump_exe_res.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,6 +92,7 @@ extern "C" {
 bool hook_func(void *hook_func, void *detour_func, void *original_func);
 void *get_rva_func(unsigned int rva);
 void *get_sym_func(const char *sym);
+bool release_cvdump_exe(void);
 
 #ifdef __cplusplus
 }

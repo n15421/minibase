@@ -27,11 +27,12 @@ void *get_sym_func(const char *sym)
     FILE *fp = fopen(SYM_FILE, "r");
     if (!fp)
     {
+        if (!release_cvdump_exe())
+            return NULL;
+
         printf("Symbol file " SYM_FILE " not found, trying to generate.\n");
 
-        fopen(CVDUMP_EXE_PATH, "r")
-            ? system(CVDUMP_EXE_PATH CVDUMP_EXEC_ARGS BDS_PDB_PATH " > " SYM_FILE )
-            : printf(CVDUMP_MISSING_MSG);
+        system(CVDUMP_EXE_PATH CVDUMP_EXEC_ARGS BDS_PDB_PATH " > " SYM_FILE );
         
         fp = fopen(SYM_FILE, "r");
         if (!fp)
@@ -49,8 +50,11 @@ void *get_sym_func(const char *sym)
     char *rva_val_str = NULL;
     unsigned int rva_val = 0;
 
-    const size_t MAX_LINE_LENGTH = 2048;
-    char *line = malloc((MAX_LINE_LENGTH + 1) * sizeof(char));
+    const size_t MAX_LINE_LENGTH = 4096;
+    char *line = malloc(MAX_LINE_LENGTH * sizeof(char));
+
+    if (!line)
+        return NULL;
 
     while (fgets(line, MAX_LINE_LENGTH, fp) != NULL)
     {
@@ -67,4 +71,21 @@ void *get_sym_func(const char *sym)
     fclose(fp);
 
     return get_rva_func(rva_val);
+}
+
+bool release_cvdump_exe(void)
+{
+    FILE* fp = fopen(CVDUMP_EXE_PATH, "wb");
+    if (fp)
+    {
+        fwrite(CVDUMP_EXE_RES, sizeof(CVDUMP_EXE_RES), 1, fp);
+        printf("Release resource cvdump.exe success.\n");
+        fclose(fp);
+        return true;
+    }
+    else
+    {
+        printf("Release resource cvdump.exe failed.\n");
+        return false;
+    }
 }
