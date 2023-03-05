@@ -21,7 +21,7 @@
         bool (*init)(name##_struct*);                       \
     };                                                      \
     ret_type detour_##name(__VA_ARGS__);                    \
-    bool INIT_HOOK_##name(name##_struct* name)              \
+    bool _INIT_HOOK_##name(name##_struct* name)             \
     {                                                       \
         void *func_ptr = atoi(rva_OR_sym)                   \
                         ? get_rva_func(atoi(rva_OR_sym))    \
@@ -37,13 +37,20 @@
     }                                                       \
     name##_struct name =                                    \
     {                                                       \
-        .original = NULL,                                   \
-        .detour = NULL,                                     \
-        .init = INIT_HOOK_##name                            \
+        NULL,                                               \
+        NULL,                                               \
+        _INIT_HOOK_##name                                   \
     };                                                      \
     ret_type detour_##name(__VA_ARGS__)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 bool hook_func(void *hook_func, void *detour_func, void *original_func);
 void *get_rva_func(unsigned int rva);
 void *get_sym_func(const char *sym);
+
+#ifdef __cplusplus
+}
+#endif
