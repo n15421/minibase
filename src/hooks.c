@@ -25,6 +25,8 @@ TMHOOK(on_console_input, bool,
 {
     puts("detour_on_console_input: ");
     puts(str);
+    // Disable the hook after the first call.
+    on_console_input.disable(&on_console_input);
     return on_console_input.original(_this, str);
 }
 

@@ -16,12 +16,16 @@
     typedef struct _##name _##name##_struct;                \
     struct _##name                                          \
     {                                                       \
+        _##name##_t hook;                                   \
         _##name##_t original;                               \
         _##name##_t detour;                                 \
         bool (*init)(_##name##_struct*);                    \
+        bool (*disable)(_##name##_struct*);                 \
+        bool (*enable)(_##name##_struct*);                  \
+        bool (*remove)(_##name##_struct*);                  \
     };                                                      \
     ret_type _detour_##name(__VA_ARGS__);                   \
-    bool _INIT_HOOK_##name(_##name##_struct* name)          \
+    bool _INIT_HOOK_##name(_##name##_struct *name)          \
     {                                                       \
         void *func_ptr = atoi(rva_OR_sym)                   \
                         ? get_rva_func(atoi(rva_OR_sym))    \
@@ -31,15 +35,35 @@
         bool result = hook_func(_hook_##name,               \
                                 _detour_##name,             \
                                 &_original_##name);         \
+        name->hook = _hook_##name;                          \
         name->original = _original_##name;                  \
         name->detour = _detour_##name;                      \
         return result;                                      \
+    }                                                       \
+    bool _DISABLE_HOOK_##name(_##name##_struct *name)       \
+    {                                                       \
+        return MH_DisableHook(name->hook) == MH_OK          \
+                    ? true : false;                         \
+    }                                                       \
+    bool _ENABLE_HOOK_##name(_##name##_struct *name)        \
+    {                                                       \
+        return MH_EnableHook(name->hook) == MH_OK           \
+                    ? true : false;                         \
+    }                                                       \
+    bool _REMOVE_HOOK_##name(_##name##_struct *name)        \
+    {                                                       \
+        return MH_RemoveHook(name->hook) == MH_OK           \
+                    ? true : false;                         \
     }                                                       \
     _##name##_struct name =                                 \
     {                                                       \
         NULL,                                               \
         NULL,                                               \
-        _INIT_HOOK_##name                                   \
+        NULL,                                               \
+        _INIT_HOOK_##name,                                  \
+        _DISABLE_HOOK_##name,                               \
+        _ENABLE_HOOK_##name,                                \
+        _REMOVE_HOOK_##name                                 \
     };                                                      \
     ret_type _detour_##name(__VA_ARGS__)
 
