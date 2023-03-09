@@ -1,5 +1,23 @@
 #include <hook_api/hook.h>
 
+typedef struct {
+    const char *sym;
+    char *line;
+} symbol_cache_entry_t;
+
+static symbol_cache_entry_t symbol_cache[SYM_CACHE_SIZE] = {0};
+
+static unsigned int hash_str(const char *str)
+{
+    unsigned int hash = 5381;
+    int c;
+
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c;
+
+    return hash % SYM_CACHE_SIZE;
+}
+
 bool hook_func(void *hook_func, void *detour_func, void *original_func)
 {
     if (MH_CreateHook(hook_func, detour_func, (LPVOID *)original_func) != MH_OK)
@@ -21,9 +39,26 @@ void *get_rva_func(unsigned int rva)
     return (void *)(base_addr + rva + 4096);
 }
 
-void *get_sym_func(const char *sym)
+void *dlsym(const char *sym)
 {
     static bool is_sym_file_generated = false;
+
+    char *rva_val_str = NULL;
+    unsigned int rva_val = 0;
+
+    unsigned int sym_hash = hash_str(sym);
+    symbol_cache_entry_t *cache_entry = &symbol_cache[sym_hash];
+    if (cache_entry->sym && strcmp(cache_entry->sym, sym) == 0)
+    {
+        char *split_str = malloc(strlen(cache_entry->sym));
+        strncpy(split_str, cache_entry->line, strlen(cache_entry->sym));
+        rva_val_str = strtok(split_str, ":");
+        rva_val_str = strtok(NULL, ", ");
+        sscanf(rva_val_str, "[%*x:%x]", &rva_val);
+        free(split_str);
+        return get_rva_func(rva_val);
+    }
+
     FILE *fp = fopen(SYM_FILE, "r");
     if (!fp)
     {
@@ -47,9 +82,6 @@ void *get_sym_func(const char *sym)
         }
     }
 
-    char *rva_val_str = NULL;
-    unsigned int rva_val = 0;
-
     const size_t MAX_LINE_LENGTH = 4096;
     char *line = malloc(MAX_LINE_LENGTH * sizeof(char));
 
@@ -60,12 +92,19 @@ void *get_sym_func(const char *sym)
     {
         if (strstr(line, sym))
         {
-            rva_val_str = strtok(line, ":");
+            char *split_str = malloc(strlen(line));
+            strncpy(split_str, line, strlen(line));
+
+            rva_val_str = strtok(split_str, ":");
             rva_val_str = strtok(NULL, ", ");
             sscanf(rva_val_str, "[%*x:%x]", &rva_val);
+            free(split_str);
             break;
         }
     }
+    
+    cache_entry->sym = sym;
+    cache_entry->line = _strdup(line);
 
     free(line);
     fclose(fp);

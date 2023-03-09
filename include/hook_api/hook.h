@@ -7,8 +7,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdint.h>
 
 #define SYM_FILE "bedrock_server_sym.txt"
+#define SYM_CACHE_SIZE 1024
 
 #define CVDUMP_URL "https://raw.github.com/microsoft/microsoft-pdb/master/cvdump/cvdump.exe"
 #define CVDUMP_EXE_PATH "cvdump.exe"
@@ -38,7 +40,7 @@
     {                                                       \
         void *func_ptr = atoi(rva_OR_sym)                   \
                         ? get_rva_func(atoi(rva_OR_sym))    \
-                        : get_sym_func(rva_OR_sym);         \
+                        : dlsym(rva_OR_sym);                \
         _##name##_t _hook_##name =                          \
                         (_##name##_t)func_ptr;              \
         bool result = hook_func(_hook_##name,               \
@@ -81,7 +83,7 @@
     ((func_proto)                                           \
     (atoi(rva_OR_sym)                                       \
         ? get_rva_func(atoi(rva_OR_sym))                    \
-        : get_sym_func(rva_OR_sym)))                        \
+        : dlsym(rva_OR_sym)))                               \
     (__VA_ARGS__)
 
 
@@ -91,7 +93,7 @@ extern "C" {
 
 bool hook_func(void *hook_func, void *detour_func, void *original_func);
 void *get_rva_func(unsigned int rva);
-void *get_sym_func(const char *sym);
+void *dlsym(const char *sym);
 bool release_cvdump_exe(void);
 
 #ifdef __cplusplus
