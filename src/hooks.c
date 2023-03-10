@@ -47,12 +47,38 @@ TMHOOK(on_console_input, bool,
     return on_console_input.original(_this, str);
 }
 
+TMHOOK(on_liquid_spread, bool, 
+	"?_canSpreadTo@LiquidBlockDynamic@@AEBA_NAEAVBlockSource@@AEBVBlockPos@@1E@Z",
+	uintptr_t _this, struct block_source *a2, struct block_pos *dst_pos, struct block_pos *src_pos, char a5)
+{
+    struct _block *block =
+        TMCALL("?getBlock@BlockSource@@UEBAAEBVBlock@@AEBVBlockPos@@@Z",
+            struct _block* (*)(struct block_source*, struct block_pos*),
+            a2, src_pos);
+
+    struct _block_legacy *block_legacy = DEREFERENCE(struct _block_legacy*, block, 16);
+
+    uintptr_t block_name_string = PTR_OFFEST(block_legacy, 128);
+
+    // std::string::c_str(block_name_string) == block_name_string.c_str()
+    const char *block_name = TMCALL("?c_str@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QEBAPEBDXZ",
+        const char *(*)(uintptr_t string),
+        block_name_string);
+
+    // Stopping the flow of lava
+    if (strcmp(block_name, "minecraft:lava") == 0)
+        return false;
+
+    return on_liquid_spread.original(_this, a2, dst_pos, src_pos, a5);
+}
+
 
 bool init_hooks(void)
 {
     on_console_input.init(&on_console_input);
     on_server_started.init(&on_server_started);
     on_console_output.init(&on_console_output);
+    on_liquid_spread.init(&on_liquid_spread);
 
     return true;
 }
