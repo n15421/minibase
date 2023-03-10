@@ -1,4 +1,4 @@
-#include <hook_api/hook.h>
+#include <hooker/hook.h>
 
 typedef struct {
     const char *sym;

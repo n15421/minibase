@@ -1,4 +1,4 @@
-#include <hooker/hooks.h>
+#include <example/hooks.h>
 
 bool load_plugin(void);
 

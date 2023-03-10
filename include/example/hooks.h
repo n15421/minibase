@@ -1,4 +1,4 @@
 #pragma once
-#include <hook_api/hook.h>
+#include <hooker/hook.h>
 
 bool init_hooks(void);

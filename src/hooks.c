@@ -1,4 +1,4 @@
-#include <hooker/hooks.h>
+#include <example/hooks.h>
 
 const enum log_level
 {

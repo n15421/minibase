@@ -1,6 +1,6 @@
 #pragma once
 #pragma comment(lib, "minhook.x64d.lib")
-#include "../minhook/MinHook.h"
+#include "minhook/MinHook.h"
 #include "cvdump_exe_res.h"
 
 #include <stdio.h>
