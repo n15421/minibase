@@ -39,6 +39,47 @@ void *get_rva_func(unsigned int rva)
     return (void *)(base_addr + rva + 4096);
 }
 
+bool add_to_sym_cache_file(const char* line)
+{
+    FILE *fp = fopen(SYM_CACHE_FILE, "a+");
+    if (!fp)
+        return false;
+
+    fprintf(fp, "%s", line);
+    fclose(fp);
+    return true;
+}
+
+bool search_sym_cache_file(const char* sym, char** line_out)
+{
+    FILE *fp = fopen(SYM_CACHE_FILE, "r");
+    if (!fp)
+        return false;
+
+    const size_t MAX_LINE_LENGTH = 4096;
+    char *line = malloc(MAX_LINE_LENGTH);
+    if (!line)
+    {
+        fclose(fp);
+        return false;
+    }
+
+    while (fgets(line, MAX_LINE_LENGTH, fp) != NULL)
+    {
+        if (strstr(line, sym))
+        {
+            *line_out = _strdup(line);
+            fclose(fp);
+            free(line);
+            return true;
+        }
+    }
+
+    fclose(fp);
+    free(line);
+    return false;
+}
+
 void *dlsym(const char *sym)
 {
     static bool is_sym_file_generated = false;
@@ -56,6 +97,18 @@ void *dlsym(const char *sym)
         rva_val_str = strtok(NULL, ", ");
         sscanf(rva_val_str, "[%*x:%x]", &rva_val);
         free(split_str);
+        return get_rva_func(rva_val);
+    }
+
+    char* cached_line = NULL;
+    if (search_sym_cache_file(sym, &cached_line))
+    {
+        rva_val_str = strtok(cached_line, ":");
+        rva_val_str = strtok(NULL, ", ");
+        sscanf(rva_val_str, "[%*x:%x]", &rva_val);
+        free(cached_line);
+        cache_entry->sym = sym;
+        cache_entry->line = _strdup(cached_line);
         return get_rva_func(rva_val);
     }
 
@@ -105,6 +158,8 @@ void *dlsym(const char *sym)
     
     cache_entry->sym = sym;
     cache_entry->line = _strdup(line);
+
+    add_to_sym_cache_file(line);
 
     free(line);
     fclose(fp);

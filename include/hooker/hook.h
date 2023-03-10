@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #define SYM_FILE "bedrock_server_sym.txt"
+#define SYM_CACHE_FILE "bedrock_server_sym_cache.txt"
 #define SYM_CACHE_SIZE 1024
 
 #define CVDUMP_URL "https://raw.github.com/microsoft/microsoft-pdb/master/cvdump/cvdump.exe"
