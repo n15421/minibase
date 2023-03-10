@@ -87,6 +87,21 @@
     (__VA_ARGS__)
 
 
+#define DEREFERENCE(type, ptr, offset)                      \
+    (*(type*)((uintptr_t)ptr + offset))
+
+
+// for uintptr_t
+#define PTR_OFFEST(ptr, offset)                             \
+    ((uintptr_t)ptr + offset)
+
+
+#define VIRTUAL_CALL(ret_type, ptr, offset, ...)            \
+    (*(ret_type(**)(void*, ##__VA_ARGS__))                  \
+    (DEREFERENCE(uintptr_t, ptr, offset)))                  \
+    (ptr, ##__VA_ARGS__)
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
