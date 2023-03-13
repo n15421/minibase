@@ -80,5 +80,6 @@ bool init_hooks(void)
     on_console_output.init(&on_console_output);
     on_liquid_spread.init(&on_liquid_spread);
 
+    hooker_enable_all_hook();
     return true;
 }

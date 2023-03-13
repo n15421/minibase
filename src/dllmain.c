@@ -6,8 +6,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 {
     switch (ul_reason_for_call) {
     case DLL_PROCESS_ATTACH:
-        if (MH_Initialize() != MH_OK) 
-            return false;
+        if (!hooker_init())
+            printf("hooker init failed\n");
         load_sym_cache();
         load_plugin();
         break;
@@ -16,7 +16,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
     case DLL_THREAD_DETACH:
         break;
     case DLL_PROCESS_DETACH:
-        MH_Uninitialize();
+        hooker_uninit();
         break;
     }
     return true;
