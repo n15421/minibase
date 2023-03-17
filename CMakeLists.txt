@@ -61,5 +61,5 @@ add_library(hooker SHARED ${SRC_FILES_DIR})
 set_target_properties(hooker PROPERTIES OUTPUT_NAME "hooker")
 
 target_link_libraries(hooker 
-	"${CMAKE_SOURCE_DIR}/lib/minhook.x64d.lib"
+	"${CMAKE_SOURCE_DIR}/lib/minhook.x64.lib"
 )
