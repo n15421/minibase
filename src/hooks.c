@@ -1,12 +1,27 @@
 #include <example/hooks.h>
 
-const enum log_level
+typedef const enum
 {
     INFO = 2u,
     WARN = 4u,
     UNKNOWN = 6u,
     ERR = 8u
-};
+} log_level;
+
+void internel_logger(const char *msg, log_level level)
+{
+    TMCALL("?log@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule@1@W4LogAreaID@@IPEBDH4ZZ",
+        char (*)(unsigned int a1, char a2, int a3, int a4, unsigned int a5, const char *a6, int a7, const char *a8),
+        0, 1, 0, 12, level, "HOOKER->LOG", 114514, msg);
+}
+
+int get_server_protocol_version(void)
+{
+	int protocol_version = 0;
+	int *offset = (int*)dlsym("?NetworkProtocolVersion@SharedConstants@@3HB");
+	read_static_data((long)*offset, (void *)&protocol_version, sizeof(int));
+	return protocol_version;
+}
 
 bool server_started = false;
 TMHOOK(on_server_started, void,
@@ -14,14 +29,15 @@ TMHOOK(on_server_started, void,
         uintptr_t _this)
 {
     server_started = true;
-    
-    TMCALL("?log@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule@1@W4LogAreaID@@IPEBDH4ZZ",
-        char (*)(unsigned int a1, char a2, int a3, int a4, unsigned int a5, const char *a6, int a7, const char *a8),
-        0, 1, 0, 12, UNKNOWN, "HOOKER->LOG", 114514, "injected!");
 
-    TMCALL("?log@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule@1@W4LogAreaID@@IPEBDH4ZZ",
-        char (*)(unsigned int a1, char a2, int a3, int a4, unsigned int a5, const char *a6, int a7, const char *a8),
-        0, 1, 0, 12, WARN, "HOOKER->LOG", 1919810, "feel free!");
+    int protocol_version = get_server_protocol_version();
+    char protocol_version_str[16];
+    _itoa(protocol_version, protocol_version_str, 10);
+
+    internel_logger("injected!", UNKNOWN);
+    internel_logger("feel free!", WARN);
+    internel_logger("protocol version:", INFO);
+    internel_logger(protocol_version_str, ERR);
 
     on_server_started.original(_this);
 }
