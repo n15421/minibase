@@ -1,5 +1,5 @@
 # hooker
-本项目是针对``Bedrock Dedicated Server``而编写的HOOK框架，基于``MinHook进``行二次API包装。
+本项目是针对``Bedrock Dedicated Server``而编写的HOOK框架，基于``MinHook``进行二次API包装。
 简化了开发流程，提高了开发效率。
 
 ## Usage
