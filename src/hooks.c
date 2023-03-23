@@ -1,14 +1,13 @@
 #include <example/hooks.h>
 
-typedef const enum
-{
+enum log_level {
     INFO = 2u,
     WARN = 4u,
     UNKNOWN = 6u,
     ERR = 8u
-} log_level;
+};
 
-void internel_logger(const char *msg, log_level level)
+void internal_logger(const char *msg, enum log_level level)
 {
     TMCALL("?log@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule@1@W4LogAreaID@@IPEBDH4ZZ",
         char (*)(unsigned int a1, char a2, int a3, int a4, unsigned int a5, const char *a6, int a7, const char *a8),
@@ -18,7 +17,7 @@ void internel_logger(const char *msg, log_level level)
 int get_server_protocol_version(void)
 {
 	int protocol_version = 0;
-	int *offset = (int*)dlsym("?NetworkProtocolVersion@SharedConstants@@3HB");
+	int *offset = (int *)dlsym("?NetworkProtocolVersion@SharedConstants@@3HB");
 	read_static_data((long)*offset, (void *)&protocol_version, sizeof(int));
 	return protocol_version;
 }
@@ -34,10 +33,10 @@ TMHOOK(on_server_started, void,
     char protocol_version_str[16];
     _itoa(protocol_version, protocol_version_str, 10);
 
-    internel_logger("injected!", UNKNOWN);
-    internel_logger("feel free!", WARN);
-    internel_logger("protocol version:", INFO);
-    internel_logger(protocol_version_str, ERR);
+    internal_logger("injected!", UNKNOWN);
+    internal_logger("feel free!", WARN);
+    internal_logger("protocol version:", INFO);
+    internal_logger(protocol_version_str, ERR);
 
     on_server_started.original(_this);
 }
