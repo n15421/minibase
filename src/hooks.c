@@ -14,14 +14,6 @@ void internal_logger(const char *msg, enum log_level level)
         0, 1, 0, 12, level, "HOOKER->LOG", 114514, msg);
 }
 
-int get_server_protocol_version(void)
-{
-	int protocol_version = 0;
-	int *offset = (int *)dlsym("?NetworkProtocolVersion@SharedConstants@@3HB");
-	read_static_data((long)*offset, (void *)&protocol_version, sizeof(int));
-	return protocol_version;
-}
-
 bool server_started = false;
 TMHOOK(on_server_started, void,
         "?startServerThread@ServerInstance@@QEAAXXZ",
@@ -29,7 +21,7 @@ TMHOOK(on_server_started, void,
 {
     server_started = true;
 
-    int protocol_version = get_server_protocol_version();
+    int protocol_version = get_network_protocol_version();
     char protocol_version_str[16];
     _itoa(protocol_version, protocol_version_str, 10);
 
