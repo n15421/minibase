@@ -1,12 +1,15 @@
 # hooker
-本项目是针对``Bedrock Dedicated Server``而编写的HOOK框架，基于``MinHook``进行二次API包装。
-简化了开发流程，提高了开发效率。
+
+English | [简体中文](README_ZH.md)
+
+This HOOK framework is for ``Bedrock Dedicated Server``, based on ``MinHook`` for secondary API packaging .
+Simplifies the development process and improves development efficiency.
 
 ## Usage
-直接将本项目的``include/hooker``，``src/hooker``文件夹以及``lib/minhook.x64d.lib``添加到你的项目中，并包含``include/hooker/hook.h``即可使用
+directly to the project ``include/hooker``, ``src/hooker`` folder and ``lib/minhook.x64d.lib`` add to your project and include ``include/hooker/hook.h`` can be used
 
 ## Example
-示例代码位于``src/dllmain.c``和``src/hooks.c``，目前实现的功能如下：
-1. 开服时输出消息
-2. 监听控制台输入输出并打印消息
-3. 通过监听液体流动函数来禁止岩浆流动
+The sample code is located in ``src/dllmain.c`` and ``src/hooks.c`` and currently implements the following functions:
+1. output messages like protocol version when the server is started
+2. listen to console input and output and print messages
+3. disable lava flow by listening to the liquid flow function
