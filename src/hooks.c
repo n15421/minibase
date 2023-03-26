@@ -1,4 +1,5 @@
 #include <example/hooks.h>
+#include <example/cpp_string.h>
 
 enum log_level {
     INFO = 2u,
@@ -60,17 +61,14 @@ TMHOOK(on_liquid_spread, bool,
 {
     struct _block *block =
         TMCALL("?getBlock@BlockSource@@UEBAAEBVBlock@@AEBVBlockPos@@@Z",
-            struct _block* (*)(struct block_source*, struct block_pos*),
+            struct _block* (*)(struct block_source *, struct block_pos *),
             a2, src_pos);
 
-    struct _block_legacy *block_legacy = DEREFERENCE(struct _block_legacy*, block, 16);
+    struct _block_legacy *block_legacy = DEREFERENCE(struct _block_legacy *, block, 16);
 
-    uintptr_t block_name_string = PTR_OFFEST(block_legacy, 128);
+    struct string *block_name_string = (struct string *)PTR_OFFSET(block_legacy, 128);
 
-    // std::string::c_str(block_name_string) == block_name_string.c_str()
-    const char *block_name = TMCALL("?c_str@?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QEBAPEBDXZ",
-        const char *(*)(uintptr_t string),
-        block_name_string);
+    const char *block_name = cpp_string__c_str(block_name_string);
 
     // Stopping the flow of lava
     if (strcmp(block_name, "minecraft:lava") == 0)
