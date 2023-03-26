@@ -1,5 +1,4 @@
 #include <example/hooks.h>
-#include <example/cpp_string.h>
 
 bool server_started = false;
 TMHOOK(on_server_started, void,
