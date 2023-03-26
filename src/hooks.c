@@ -81,14 +81,14 @@ TMHOOK(on_player_attack, bool,
 
     send_play_sound_packet(player, "ambient.weather.thunder", *pos, 1, 1);
 
-	float attack_damage = TMCALL("?calculateAttackDamage@Actor@@QEAAMAEAV1@@Z",
-            float (*)(struct player *player, struct actor *actor),
-            player, actor);
-    
-    char message[32] = "Attack Damage: ";
-    char attack_damage_str[16];
-    _itoa(attack_damage, attack_damage_str, 10);
-    strcat(message, attack_damage_str);
+	float attack_damage = calc_attack_damage((struct actor *)player, actor);
+    const char *player_name = get_name_tag((struct actor *)player);
+
+    char message[128];
+
+    snprintf(message, sizeof(message),
+            "\nAttacker: %s\nPosition: %.3lf, %.3lf, %.3lf\nDamage:   %.3lf", 
+            player_name, pos->x, pos->y, pos->z, attack_damage);
 
     server_logger(message, WARN);
 
