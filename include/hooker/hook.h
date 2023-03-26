@@ -94,7 +94,7 @@
 
 
 // for uintptr_t
-#define PTR_OFFEST(ptr, offset)                             \
+#define PTR_OFFSET(ptr, offset)                             \
     ((uintptr_t)ptr + offset)
 
 
