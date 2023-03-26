@@ -62,6 +62,23 @@ TMHOOK(on_liquid_spread, bool,
     return on_liquid_spread.original(_this, a2, dst_pos, src_pos, a5);
 }
 
+TMHOOK(on_player_attack, bool,
+    "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
+	struct player *player, struct actor *actor, struct ActorDamageCause *cause)
+{
+	float attack_damage = TMCALL("?calculateAttackDamage@Actor@@QEAAMAEAV1@@Z",
+            float (*)(struct player *player, struct actor *actor),
+            player, actor);
+    
+    char message[32] = "Attack Damage: ";
+    char attack_damage_str[16];
+    _itoa(attack_damage, attack_damage_str, 10);
+    strcat(message, attack_damage_str);
+
+    server_logger(message, WARN);
+
+    return on_player_attack.original(player, actor, cause);
+}
 
 bool init_hooks(void)
 {
@@ -69,6 +86,7 @@ bool init_hooks(void)
     on_server_started.init(&on_server_started);
     on_console_output.init(&on_console_output);
     on_liquid_spread.init(&on_liquid_spread);
+    on_player_attack.init(&on_player_attack);
 
     hooker_enable_all_hook();
     return true;
