@@ -93,6 +93,10 @@
     (*(type*)((uintptr_t)ptr + offset))
 
 
+#define REFERENCE(type, ptr, offset)                        \
+    (type*)((uintptr_t)ptr + offset)
+
+
 // for uintptr_t
 #define PTR_OFFSET(ptr, offset)                             \
     ((uintptr_t)ptr + offset)

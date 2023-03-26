@@ -62,7 +62,7 @@ TMHOOK(on_liquid_spread, bool,
 
     struct _block_legacy *block_legacy = DEREFERENCE(struct _block_legacy *, block, 16);
 
-    struct string *block_name_string = (struct string *)PTR_OFFSET(block_legacy, 128);
+    struct string *block_name_string = REFERENCE(struct string, block_legacy, 128);
 
     const char *block_name = string.c_str(block_name_string);
 
