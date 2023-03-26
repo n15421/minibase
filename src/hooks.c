@@ -1,5 +1,7 @@
 #include <example/hooks.h>
 
+extern struct string string;
+
 bool server_started = false;
 TMHOOK(on_server_started, void,
         "?startServerThread@ServerInstance@@QEAAXXZ",
@@ -11,8 +13,8 @@ TMHOOK(on_server_started, void,
     char protocol_version_str[16];
     _itoa(protocol_version, protocol_version_str, 10);
 
-    struct string *cpp_str = cpp_string__string("injected!");
-    const char *c_str = cpp_string__c_str(cpp_str);
+    struct string *cpp_str = string.string("injected!");
+    const char *c_str = string.c_str(cpp_str);
 
     server_logger(c_str, UNKNOWN);
     server_logger("feel free!", WARN);
@@ -62,7 +64,7 @@ TMHOOK(on_liquid_spread, bool,
 
     struct string *block_name_string = (struct string *)PTR_OFFSET(block_legacy, 128);
 
-    const char *block_name = cpp_string__c_str(block_name_string);
+    const char *block_name = string.c_str(block_name_string);
 
     // Stopping the flow of lava
     if (strcmp(block_name, "minecraft:lava") == 0)

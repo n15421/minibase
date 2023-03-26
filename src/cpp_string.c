@@ -1,6 +1,16 @@
 #include <example/cpp_string.h>
 
 // std::string::string(const char *c_str)
+struct string *cpp_string__string(const char *c_str);
+// std::string::c_str()
+const char *cpp_string__c_str(struct string *cpp_str);
+
+struct string string = {
+    .string = cpp_string__string,
+    .c_str = cpp_string__c_str,
+};
+
+
 struct string *cpp_string__string(const char *c_str)
 {
     size_t extra_len = 32;
@@ -11,7 +21,6 @@ struct string *cpp_string__string(const char *c_str)
     return cpp_str;
 }
 
-// std::string::c_str()
 const char *cpp_string__c_str(struct string *cpp_str)
 {
     const char *c_str = 
