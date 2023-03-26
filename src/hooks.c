@@ -11,11 +11,15 @@ TMHOOK(on_server_started, void,
     char protocol_version_str[16];
     _itoa(protocol_version, protocol_version_str, 10);
 
-    server_logger("injected!", UNKNOWN);
+    struct string *cpp_str = cpp_string__string("injected!");
+    const char *c_str = cpp_string__c_str(cpp_str);
+
+    server_logger(c_str, UNKNOWN);
     server_logger("feel free!", WARN);
     server_logger("protocol version:", INFO);
     server_logger(protocol_version_str, ERR);
 
+    free(cpp_str);
     on_server_started.original(_this);
 }
 
