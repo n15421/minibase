@@ -23,8 +23,12 @@ TMHOOK(on_console_output, bool,
         "??$_Insert_string@DU?$char_traits@D@std@@_K@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@QEBD_K@Z",
         uintptr_t _this, const char *str, size_t size)
 {
-    if (server_started)
-        printf("detour_on_console_output: %s\n", str);
+    if (server_started) {
+        server_logger("detour_on_console_output: ", ERR);
+        server_logger(str, ERR);
+        server_logger("\n", INFO);
+        on_console_output.disable(&on_console_output);
+    }
     
     return on_console_output.original(_this, str, size);
 }
@@ -33,8 +37,9 @@ TMHOOK(on_console_input, bool,
         "??$inner_enqueue@$0A@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@?$SPSCQueue@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@$0CAA@@@AEAA_NAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z",
         uintptr_t _this, const char *str)
 {
-    puts("detour_on_console_input: ");
-    puts(str);
+    server_logger("detour_on_console_input: ", WARN);
+    server_logger(str, WARN);
+    server_logger("\n", INFO);
     // Disable the hook after the first call.
     on_console_input.disable(&on_console_input);
     return on_console_input.original(_this, str);
