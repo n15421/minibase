@@ -77,6 +77,10 @@ TMHOOK(on_player_attack, bool,
     "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
 	struct player *player, struct actor *actor, struct ActorDamageCause *cause)
 {
+    struct vec3 *pos = actor_get_pos((struct actor *)player);
+
+    send_play_sound_packet(player, "ambient.weather.thunder", *pos, 1, 1);
+
 	float attack_damage = TMCALL("?calculateAttackDamage@Actor@@QEAAMAEAV1@@Z",
             float (*)(struct player *player, struct actor *actor),
             player, actor);
