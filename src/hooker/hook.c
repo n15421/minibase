@@ -162,7 +162,7 @@ void *dlsym(const char *sym)
             break;
         }
     }
-    
+
     free(line);
     fclose(fp);
 
@@ -239,7 +239,7 @@ bool hooker_init(void)
     if (MH_Initialize() != MH_OK)
         return false;
     check_server_update();
-        
+
     return true;
 }
 

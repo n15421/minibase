@@ -36,7 +36,8 @@ void load_hashmap_from_file(const char *filename)
     fclose(file);
 }
 
-void save_hashmap_to_file(const char *filename) {
+void save_hashmap_to_file(const char *filename)
+{
     FILE *file = fopen(filename, "wb");
     if (!file)
         return;
@@ -69,8 +70,7 @@ unsigned int get_rva_from_hashmap(const char *sym)
 void free_hashmap(void)
 {
     struct entry *e, *tmp;
-    HASH_ITER(hh, table, e, tmp)
-    {
+    HASH_ITER(hh, table, e, tmp) {
         HASH_DEL(table, e);
         free(e);
     }
