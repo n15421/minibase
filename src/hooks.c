@@ -1,20 +1,6 @@
 #include <example/hooks.h>
 #include <example/cpp_string.h>
 
-enum log_level {
-    INFO = 2u,
-    WARN = 4u,
-    UNKNOWN = 6u,
-    ERR = 8u
-};
-
-void internal_logger(const char *msg, enum log_level level)
-{
-    TMCALL("?log@BedrockLog@@YAXW4LogCategory@1@V?$bitset@$02@std@@W4LogRule@1@W4LogAreaID@@IPEBDH4ZZ",
-        char (*)(unsigned int a1, char a2, int a3, int a4, unsigned int a5, const char *a6, int a7, const char *a8),
-        0, 1, 0, 12, level, "HOOKER->LOG", 114514, msg);
-}
-
 bool server_started = false;
 TMHOOK(on_server_started, void,
         "?startServerThread@ServerInstance@@QEAAXXZ",
@@ -26,10 +12,10 @@ TMHOOK(on_server_started, void,
     char protocol_version_str[16];
     _itoa(protocol_version, protocol_version_str, 10);
 
-    internal_logger("injected!", UNKNOWN);
-    internal_logger("feel free!", WARN);
-    internal_logger("protocol version:", INFO);
-    internal_logger(protocol_version_str, ERR);
+    server_logger("injected!", UNKNOWN);
+    server_logger("feel free!", WARN);
+    server_logger("protocol version:", INFO);
+    server_logger(protocol_version_str, ERR);
 
     on_server_started.original(_this);
 }
