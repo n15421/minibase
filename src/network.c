@@ -26,13 +26,18 @@ void send_play_sound_packet(struct player *player, const char *sound_name,
 	// Never dereference struct string.
 	// Please use functions like memcpy to manipulate data
 	struct string *sound_name_cpp_str = string.string(sound_name);
-	memcpy((void *)(pkt + 48), sound_name_cpp_str, 32);
+	TMCALL("??0PlaySoundPacket@@QEAA@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVVec3@@MM@Z",
+		uintptr_t (*)(uintptr_t pkt, struct string *sound_name,
+					 	struct vec3 *pos, float volume, float pitch),
+		pkt, sound_name_cpp_str, &pos, volume, pitch);
 
-	DEREFERENCE(int, pkt, 80) = (int)(pos.x * 8.0F);
-	DEREFERENCE(int, pkt, 84) = (int)(pos.y * 8.0F);
-	DEREFERENCE(int, pkt, 88) = (int)(pos.z * 8.0F);
-	DEREFERENCE(float, pkt, 92) = volume;
-	DEREFERENCE(float, pkt, 96) = pitch;
+	// memcpy((void *)(pkt + 48), sound_name_cpp_str, 32);
+
+	// DEREFERENCE(int, pkt, 80) = (int)(pos.x * 8.0F);
+	// DEREFERENCE(int, pkt, 84) = (int)(pos.y * 8.0F);
+	// DEREFERENCE(int, pkt, 88) = (int)(pos.z * 8.0F);
+	// DEREFERENCE(float, pkt, 92) = volume;
+	// DEREFERENCE(float, pkt, 96) = pitch;
 	send_network_packet(player, pkt);
 	free(sound_name_cpp_str);
 }
