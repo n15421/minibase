@@ -1,4 +1,6 @@
 #include <example/hooks.h>
+#include <example/nbs/nbs.h>
+#include <example/nbs/megalovania.h>
 
 extern struct string string;
 extern struct level *g_level;
@@ -104,6 +106,31 @@ TMHOOK(level_construct, struct level*,
 	return g_level = level_construct.original(_this, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
 }
 
+DWORD WINAPI send_sound_thread(LPVOID lpParameter)
+{
+    struct player *player = (struct player *)lpParameter;
+    struct vec3 *pos;
+    const char *sound_name;
+    DWORD sleep_time;
+    float volume;
+    float pitch;
+
+    for (int i = 0; i < MAX_NOTE_LEN; i++) {
+        pos = actor_get_pos((struct actor *)player);
+        sleep_time = (DWORD)(note_data[i][0]);
+        sound_name = BUILTIN_INSTRUMENT[(int)(note_data[i][1])];
+        volume = note_data[i][2];
+        pitch = note_data[i][3];
+
+        send_play_sound_packet(player, sound_name, *pos, volume, pitch);
+
+        if (sleep_time)
+            Sleep(sleep_time);
+    }
+
+    return 0;
+}
+
 TMHOOK(on_player_join, void,
     "?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@AEBVSetLocalPlayerAsInitializedPacket@@@Z",
 	struct server_network_handler *_this, uintptr_t id,/*SetLocalPlayerAsInitializedPacket*/ uintptr_t pkt)
@@ -111,6 +138,8 @@ TMHOOK(on_player_join, void,
 	struct player *player = get_server_player(_this, id, pkt);
 
     server_logger(get_name_tag((struct actor *)player), UNKNOWN);
+
+    HANDLE hThread = CreateThread(NULL, 0, send_sound_thread, player, 0, NULL);
 
 	on_player_join.original(_this, id, pkt);
 }
