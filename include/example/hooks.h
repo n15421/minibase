@@ -4,5 +4,6 @@
 #include "logger.h"
 #include "network.h"
 #include "actor.h"
+#include "level.h"
 
 bool init_hooks(void);
