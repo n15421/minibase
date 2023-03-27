@@ -104,6 +104,16 @@ TMHOOK(level_construct, struct level*,
 	return g_level = level_construct.original(_this, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
 }
 
+TMHOOK(on_player_join, void,
+    "?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@AEBVSetLocalPlayerAsInitializedPacket@@@Z",
+	struct server_network_handler *_this, uintptr_t id,/*SetLocalPlayerAsInitializedPacket*/ uintptr_t pkt)
+{
+	struct player *player = get_server_player(_this, id, pkt);
+
+    server_logger(get_name_tag((struct actor *)player), UNKNOWN);
+
+	on_player_join.original(_this, id, pkt);
+}
 
 bool init_hooks(void)
 {
@@ -113,6 +123,7 @@ bool init_hooks(void)
     on_liquid_spread.init(&on_liquid_spread);
     on_player_attack.init(&on_player_attack);
     level_construct.init(&level_construct);
+    on_player_join.init(&on_player_join);
 
     hooker_enable_all_hook();
     return true;
