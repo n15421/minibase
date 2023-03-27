@@ -3,6 +3,8 @@
 #include "position.h"
 #include "cpp_string.h"
 
+struct server_network_handler;
+
 inline uintptr_t create_packet(int type);
 inline void send_network_packet(struct player *player, uintptr_t pkt);
 
