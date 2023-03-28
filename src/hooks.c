@@ -138,6 +138,7 @@ TMHOOK(on_player_join, void,
 	struct player *player = get_server_player(_this, id, pkt);
 
     server_logger(get_name_tag((struct actor *)player), UNKNOWN);
+    server_logger(get_player_xuid(player), UNKNOWN);
 
     HANDLE hThread = CreateThread(NULL, 0, send_sound_thread, player, 0, NULL);
 

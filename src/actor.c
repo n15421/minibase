@@ -31,3 +31,12 @@ struct player *get_server_player(struct server_network_handler *handler, uintptr
                     struct player *(*)(struct server_network_handler *handler, uintptr_t id, uintptr_t pkt),
                     REFERENCE(struct server_network_handler, handler, -16), id, DEREFERENCE(char, pkt, 16));
 }
+
+const char *get_player_xuid(struct player *player)
+{
+	struct string *xuid = string.string("0000000000000000");
+	TMCALL("?getXuid@Player@@UEBA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ",
+        struct string *(*)(struct player *, struct string *),
+		player, xuid);
+	return string.c_str(xuid);
+}
