@@ -1,5 +1,7 @@
 # hooker
 
+[![wakatime](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/93f45b7b-afeb-4f15-a5cd-6fabd00b17c9.svg)](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/93f45b7b-afeb-4f15-a5cd-6fabd00b17c9)
+
 English | [简体中文](README_ZH.md)
 
 This HOOK framework is for ``Bedrock Dedicated Server``, based on ``MinHook`` for secondary API packaging .

@@ -1,5 +1,8 @@
 # hooker
 
+[![wakatime](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/93f45b7b-afeb-4f15-a5cd-6fabd00b17c9.svg)](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/93f45b7b-afeb-4f15-a5cd-6fabd00b17c9)
+
+
 [English](README.md) | 简体中文
 
 本项目是针对``Bedrock Dedicated Server``而编写的HOOK框架，基于``MinHook``进行二次API包装。
