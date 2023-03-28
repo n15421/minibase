@@ -1,5 +1,5 @@
 #define MAX_NOTE_LEN 1021
-float note_data[MAX_NOTE_LEN][4] = {
+const float NOTE_DATA[MAX_NOTE_LEN][4] = {
 	{422, 15, 1.0, 2.1189},
 	{845, 15, 1.0, 2.1189},
 	{159, 15, 1.0, 2.1189},

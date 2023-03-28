@@ -117,10 +117,10 @@ DWORD WINAPI send_sound_thread(LPVOID lpParameter)
 
     for (int i = 0; i < MAX_NOTE_LEN; i++) {
         pos = actor_get_pos((struct actor *)player);
-        sleep_time = (DWORD)(note_data[i][0]);
-        sound_name = BUILTIN_INSTRUMENT[(int)(note_data[i][1])];
-        volume = note_data[i][2];
-        pitch = note_data[i][3];
+        sleep_time = (DWORD)(NOTE_DATA[i][0]);
+        sound_name = BUILTIN_INSTRUMENT[(int)(NOTE_DATA[i][1])];
+        volume = NOTE_DATA[i][2];
+        pitch = NOTE_DATA[i][3];
 
         send_play_sound_packet(player, sound_name, *pos, volume, pitch);
 
