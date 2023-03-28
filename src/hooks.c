@@ -106,29 +106,55 @@ TMHOOK(level_construct, struct level*,
 	return g_level = level_construct.original(_this, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
 }
 
-DWORD WINAPI send_sound_thread(LPVOID lpParameter)
+int g_note_queue[MAX_NOTE_LEN];
+char g_player_xuid[17];
+DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
 {
-    struct player *player = (struct player *)lpParameter;
-    struct vec3 *pos;
-    const char *sound_name;
     DWORD sleep_time;
+    while (true) {
+        for (int i = 0; i < MAX_NOTE_LEN; i++) {
+            sleep_time = (DWORD)(NOTE_DATA[i][0]);
+
+            for (int j = 0; j < MAX_NOTE_LEN; j++) {
+                if (g_note_queue[j] == 0) {
+                    g_note_queue[j] = i;
+                    break;
+                }
+            }
+
+            if (sleep_time)
+                Sleep(sleep_time);
+        }
+    }
+    return 0;
+}
+
+void send_music_sound_packet(void)
+{
+    struct player *player = NULL;
+    struct vec3 *pos;
+    int note_index = 0;
+    const char *sound_name;
     float volume;
     float pitch;
 
+    if (strlen(g_player_xuid) != 0)
+        player = get_player_by_xuid(g_level, g_player_xuid);
+    if (!player)
+        return;
+
     for (int i = 0; i < MAX_NOTE_LEN; i++) {
+        if (g_note_queue[i] == 0)
+            return;
+        note_index = g_note_queue[i];
         pos = actor_get_pos((struct actor *)player);
-        sleep_time = (DWORD)(NOTE_DATA[i][0]);
-        sound_name = BUILTIN_INSTRUMENT[(int)(NOTE_DATA[i][1])];
-        volume = NOTE_DATA[i][2];
-        pitch = NOTE_DATA[i][3];
+        sound_name = BUILTIN_INSTRUMENT[(int)(NOTE_DATA[note_index][1])];
+        volume = NOTE_DATA[note_index][2];
+        pitch = NOTE_DATA[note_index][3];
 
         send_play_sound_packet(player, sound_name, *pos, volume, pitch);
-
-        if (sleep_time)
-            Sleep(sleep_time);
+        g_note_queue[i] = 0;
     }
-
-    return 0;
 }
 
 TMHOOK(on_player_join, void,
@@ -140,9 +166,20 @@ TMHOOK(on_player_join, void,
     server_logger(get_name_tag((struct actor *)player), UNKNOWN);
     server_logger(get_player_xuid(player), UNKNOWN);
 
-    HANDLE hThread = CreateThread(NULL, 0, send_sound_thread, player, 0, NULL);
+    if (strlen(g_player_xuid) == 0) {
+        HANDLE hThread = CreateThread(NULL, 0, make_note_queue_thread, NULL, 0, NULL);
+        strcpy(g_player_xuid, get_player_xuid(player));
+    }
 
 	on_player_join.original(_this, id, pkt);
+}
+
+TMHOOK(on_tick, void,
+	"?tick@Level@@UEAAXXZ",
+	struct level *level)
+{
+    send_music_sound_packet();
+	on_tick.original(level);
 }
 
 bool init_hooks(void)
@@ -154,6 +191,7 @@ bool init_hooks(void)
     on_player_attack.init(&on_player_attack);
     level_construct.init(&level_construct);
     on_player_join.init(&on_player_join);
+    on_tick.init(&on_tick);
 
     hooker_enable_all_hook();
     return true;
