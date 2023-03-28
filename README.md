@@ -13,3 +13,5 @@ The sample code is located in ``src/dllmain.c`` and ``src/hooks.c`` and currentl
 1. output messages like protocol version when the server is started
 2. listen to console input and output and print messages
 3. disable lava flow by listening to the liquid flow function
+4. display the damage generated when a player attacks and send a sound packet to them to make them hear the sound of thunder
+5. Play NBS music on a loop after a player enters the server
