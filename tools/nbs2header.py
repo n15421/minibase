@@ -56,7 +56,7 @@ def gen_header(processed: list[ProcessedNote]) -> str:
         "const float NOTE_DATA[MAX_NOTE_LEN][4] = {\n"
     )
     body = "".join(
-        [f"\t{{ {a}, {b}, {c}, {round(d, 6)} }},\n" for a, b, c, d in processed]
+        [f"\t{{{a}.0f, {b}.0f, {c}f, {round(d, 6)}f}},\n" for a, b, c, d in processed]
     )
     tail = "};\n"
 
