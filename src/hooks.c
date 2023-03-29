@@ -121,8 +121,10 @@ DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
     const char *player_name = get_name_tag((struct actor *)player);
     char start_msg[128] = "Start playing music: ";
     char stop_msg[128] = "Stop playing music: ";
-    DWORD sleep_time = 0;
     int player_index = 0;
+    LARGE_INTEGER start_time, end_time, elapsed_time, frequency;
+
+    QueryPerformanceFrequency(&frequency);
 
     strcat(start_msg, player_name);
     strcat(stop_msg, player_name);
@@ -137,11 +139,15 @@ DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
 
         server_logger(start_msg, INFO);
         for (int j = 0; j < MAX_NOTE_LEN; j++) {
-            sleep_time = (DWORD)(NOTE_DATA[j][0]);
+            QueryPerformanceCounter(&start_time);
+            elapsed_time.QuadPart = 0;
+
+            while (elapsed_time.QuadPart < (LONGLONG)(NOTE_DATA[j][0] * frequency.QuadPart / 1000)) {
+                QueryPerformanceCounter(&end_time);
+                elapsed_time.QuadPart = end_time.QuadPart - start_time.QuadPart;
+            }
 
             g_note_queue[player_index][2] = j;
-            if (sleep_time)
-                Sleep(sleep_time);
         }
         server_logger(stop_msg, INFO);
     }
