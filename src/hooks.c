@@ -106,26 +106,46 @@ TMHOOK(level_construct, struct level*,
 	return g_level = level_construct.original(_this, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17);
 }
 
-int g_note_queue[MAX_NOTE_LEN];
-char g_player_xuid[PLAYER_XUID_STR_LEN];
+/*
+ * A two-dimensional array for storing players and their play sequences
+ *
+ * 0: player pointer
+ * 1: Last played to position
+ * 2: Next play to position
+ */
+unsigned long long g_note_queue[MAX_ONLINE_PLAYER][3];
+
 DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
 {
-    DWORD sleep_time;
-    while (true) {
-        for (int i = 0; i < MAX_NOTE_LEN; i++) {
-            sleep_time = (DWORD)(NOTE_DATA[i][0]);
+    struct player *player = (struct player *)lpParameter;
+    const char *player_name = get_name_tag((struct actor *)player);
+    char start_msg[128] = "Start playing music: ";
+    char stop_msg[128] = "Stop playing music: ";
+    DWORD sleep_time = 0;
+    int player_index = 0;
 
-            for (int j = 0; j < MAX_NOTE_LEN; j++) {
-                if (g_note_queue[j] == 0) {
-                    g_note_queue[j] = i;
-                    break;
-                }
+    strcat(start_msg, player_name);
+    strcat(stop_msg, player_name);
+
+    while (player) {
+        for (int i = 0; i < MAX_ONLINE_PLAYER; i++) {
+            if (g_note_queue[i][0] == (uintptr_t)player) {
+                player_index = i;
+                break;
             }
+        }
 
+        server_logger(start_msg, INFO);
+        for (int j = 0; j < MAX_NOTE_LEN; j++) {
+            sleep_time = (DWORD)(NOTE_DATA[j][0]);
+
+            g_note_queue[player_index][2] = j;
             if (sleep_time)
                 Sleep(sleep_time);
         }
+        server_logger(stop_msg, INFO);
     }
+    memset(g_note_queue[player_index], 0, sizeof(g_note_queue[player_index]));
     return 0;
 }
 
@@ -133,27 +153,30 @@ void send_music_sound_packet(void)
 {
     struct player *player = NULL;
     struct vec3 *pos;
-    int note_index = 0;
+    unsigned long long note_index = 0;
     const char *sound_name;
     float volume;
     float pitch;
 
-    if (strnlen(g_player_xuid, PLAYER_XUID_STR_LEN) != 0)
-        player = get_player_by_xuid(g_level, g_player_xuid);
-    if (!player)
-        return;
+    for (int i = 0; i < MAX_ONLINE_PLAYER; i++) {
+        if (g_note_queue[i][0] == 0)
+            continue;
 
-    for (int i = 0; i < MAX_NOTE_LEN; i++) {
-        if (g_note_queue[i] == 0)
-            return;
-        note_index = g_note_queue[i];
-        pos = actor_get_pos((struct actor *)player);
-        sound_name = BUILTIN_INSTRUMENT[(int)(NOTE_DATA[note_index][1])];
-        volume = NOTE_DATA[note_index][2];
-        pitch = NOTE_DATA[note_index][3];
+        player = (struct player *)(g_note_queue[i][0]);
 
-        send_play_sound_packet(player, sound_name, *pos, volume, pitch);
-        g_note_queue[i] = 0;
+        for (note_index = g_note_queue[i][1]; note_index < g_note_queue[i][2]; note_index++) {
+            if (!player) {
+                memset(g_note_queue[i], 0, sizeof(g_note_queue[i]));
+                break;
+            }
+            pos = actor_get_pos((struct actor *)player);
+            sound_name = BUILTIN_INSTRUMENT[(int)(NOTE_DATA[note_index][1])];
+            volume = NOTE_DATA[note_index][2];
+            pitch = NOTE_DATA[note_index][3];
+
+            send_play_sound_packet(player, sound_name, *pos, volume, pitch);
+        }
+        g_note_queue[i][1] = g_note_queue[i][2];
     }
 }
 
@@ -161,15 +184,18 @@ TMHOOK(on_player_join, void,
     "?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@AEBVSetLocalPlayerAsInitializedPacket@@@Z",
 	struct server_network_handler *_this, uintptr_t id,/*SetLocalPlayerAsInitializedPacket*/ uintptr_t pkt)
 {
-	struct player *player = get_server_player(_this, id, pkt);
+    struct player *player = get_server_player(_this, id, pkt);
 
     server_logger(get_name_tag((struct actor *)player), UNKNOWN);
     server_logger(get_player_xuid(player), UNKNOWN);
 
-    if (strnlen(g_player_xuid, PLAYER_XUID_STR_LEN) == 0) {
-        HANDLE hThread = CreateThread(NULL, 0, make_note_queue_thread, NULL, 0, NULL);
-        strncpy(g_player_xuid, get_player_xuid(player), PLAYER_XUID_STR_LEN);
+    for (int i = 0; i < MAX_ONLINE_PLAYER; i++) {
+        if (g_note_queue[i][0] == 0) {
+            g_note_queue[i][0] = (uintptr_t)player;
+            break;
+        }
     }
+    HANDLE hThread = CreateThread(NULL, 0, make_note_queue_thread, player, 0, NULL);
 
 	on_player_join.original(_this, id, pkt);
 }
@@ -179,7 +205,7 @@ TMHOOK(on_tick, void,
 	struct level *level)
 {
     send_music_sound_packet();
-	on_tick.original(level);
+    on_tick.original(level);
 }
 
 bool init_hooks(void)
