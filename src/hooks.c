@@ -107,7 +107,7 @@ TMHOOK(level_construct, struct level*,
 }
 
 int g_note_queue[MAX_NOTE_LEN];
-char g_player_xuid[17];
+char g_player_xuid[PLAYER_XUID_STR_LEN];
 DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
 {
     DWORD sleep_time;
@@ -138,7 +138,7 @@ void send_music_sound_packet(void)
     float volume;
     float pitch;
 
-    if (strlen(g_player_xuid) != 0)
+    if (strnlen(g_player_xuid, PLAYER_XUID_STR_LEN) != 0)
         player = get_player_by_xuid(g_level, g_player_xuid);
     if (!player)
         return;
@@ -166,9 +166,9 @@ TMHOOK(on_player_join, void,
     server_logger(get_name_tag((struct actor *)player), UNKNOWN);
     server_logger(get_player_xuid(player), UNKNOWN);
 
-    if (strlen(g_player_xuid) == 0) {
+    if (strnlen(g_player_xuid, PLAYER_XUID_STR_LEN) == 0) {
         HANDLE hThread = CreateThread(NULL, 0, make_note_queue_thread, NULL, 0, NULL);
-        strcpy(g_player_xuid, get_player_xuid(player));
+        strncpy(g_player_xuid, get_player_xuid(player), PLAYER_XUID_STR_LEN);
     }
 
 	on_player_join.original(_this, id, pkt);

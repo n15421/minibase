@@ -28,7 +28,7 @@ void load_hashmap_from_file(const char *filename)
     struct entry entry;
     while (fread(&entry, sizeof(entry), 1, file) == 1) {
         struct entry *e = (struct entry *) malloc(sizeof(struct entry));
-        strcpy(e->sym, entry.sym);
+        strncpy(e->sym, entry.sym, SYM_MAX_LEN);
         e->rva = entry.rva;
         HASH_ADD_STR(table, sym, e);
     }
@@ -52,7 +52,7 @@ void save_hashmap_to_file(const char *filename)
 void add_entry(const char *sym, unsigned int rva)
 {
     struct entry *e = (struct entry *) malloc(sizeof(struct entry));
-    strcpy(e->sym, sym);
+    strncpy(e->sym, sym, SYM_MAX_LEN);
     e->rva = rva;
     HASH_ADD_STR(table, sym, e);
 }

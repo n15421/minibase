@@ -14,7 +14,7 @@ struct string string = {
 struct string *cpp_string__string(const char *c_str)
 {
     size_t extra_len = 32;
-    struct string *cpp_str = calloc(strlen(c_str) + extra_len, 1);
+    struct string *cpp_str = calloc(strnlen(c_str, 9223372036854775807ULL) + extra_len, 1);
     TMCALL("??0?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QEAA@QEBD@Z",
         const char *(*)(struct string *cpp_str, const char *c_str),
         cpp_str, c_str);

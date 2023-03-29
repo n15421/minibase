@@ -2,6 +2,8 @@
 #include "position.h"
 #include "cpp_string.h"
 
+#define PLAYER_XUID_STR_LEN 17
+
 struct actor;
 struct player;
 
