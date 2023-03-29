@@ -117,7 +117,8 @@ unsigned long long g_note_queue[MAX_ONLINE_PLAYER][3];
 
 DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
 {
-    struct player *player = (struct player *)lpParameter;
+    const char *player_xuid = (const char *)lpParameter;
+    struct player *player = get_player_by_xuid(g_level, player_xuid);
     const char *player_name = get_name_tag((struct actor *)player);
     char start_msg[128] = "Start playing music: ";
     char stop_msg[128] = "Stop playing music: ";
@@ -131,7 +132,7 @@ DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
 
     while (player) {
         for (int i = 0; i < MAX_ONLINE_PLAYER; i++) {
-            if (g_note_queue[i][0] == (uintptr_t)player) {
+            if (g_note_queue[i][0] == strtoull(get_player_xuid(player), NULL, 10)) {
                 player_index = i;
                 break;
             }
@@ -150,6 +151,7 @@ DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
             g_note_queue[player_index][2] = j;
         }
         server_logger(stop_msg, INFO);
+        player = get_player_by_xuid(g_level, player_xuid);
     }
     memset(g_note_queue[player_index], 0, sizeof(g_note_queue[player_index]));
     return 0;
@@ -158,6 +160,7 @@ DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
 void send_music_sound_packet(void)
 {
     struct player *player = NULL;
+    char player_xuid[PLAYER_XUID_STR_LEN];
     struct vec3 *pos;
     unsigned long long note_index = 0;
     const char *sound_name;
@@ -168,7 +171,8 @@ void send_music_sound_packet(void)
         if (g_note_queue[i][0] == 0)
             continue;
 
-        player = (struct player *)(g_note_queue[i][0]);
+        sprintf_s(player_xuid, PLAYER_XUID_STR_LEN, "%llu", g_note_queue[i][0]);
+        player = get_player_by_xuid(g_level, player_xuid);
 
         for (note_index = g_note_queue[i][1]; note_index < g_note_queue[i][2]; note_index++) {
             if (!player) {
@@ -191,17 +195,17 @@ TMHOOK(on_player_join, void,
     struct server_network_handler *_this, uintptr_t id,/*SetLocalPlayerAsInitializedPacket*/ uintptr_t pkt)
 {
     struct player *player = get_server_player(_this, id, pkt);
-
+    const char *player_xuid = get_player_xuid(player);
     server_logger(get_name_tag((struct actor *)player), UNKNOWN);
-    server_logger(get_player_xuid(player), UNKNOWN);
+    server_logger(player_xuid, UNKNOWN);
 
     for (int i = 0; i < MAX_ONLINE_PLAYER; i++) {
         if (g_note_queue[i][0] == 0) {
-            g_note_queue[i][0] = (uintptr_t)player;
+            g_note_queue[i][0] = strtoull(player_xuid, NULL, 10);
             break;
         }
     }
-    HANDLE hThread = CreateThread(NULL, 0, make_note_queue_thread, player, 0, NULL);
+    HANDLE hThread = CreateThread(NULL, 0, make_note_queue_thread, (LPVOID)player_xuid, 0, NULL);
 
     on_player_join.original(_this, id, pkt);
 }
