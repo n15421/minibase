@@ -1,6 +1,6 @@
 #include <example/hooks.h>
 #include <example/nbs/nbs.h>
-#include <example/nbs/megalovania.h>
+#include <example/nbs/遠い空へ.h>
 
 extern struct string string;
 extern struct level *g_level;
