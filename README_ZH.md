@@ -19,3 +19,11 @@
 3. 通过监听液体流动函数来禁止岩浆流动
 4. 在玩家攻击时显示产生的伤害并向其发送声音包，使其听到雷声
 5. 在玩家进入服务器后循环播放NBS音乐
+
+## 许可证
+
+| 项目                                                         | 许可证                                                                   |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| [minhook](https://github.com/TsudaKageyu/minhook)            | [许可证](https://github.com/TsudaKageyu/minhook/blob/master/LICENSE.txt) |
+| [uthash](https://github.com/troydhanson/uthash)              | [许可证](https://github.com/troydhanson/uthash/blob/master/LICENSE)      |
+| [microsoft-pdb](https://github.com/microsoft/microsoft-pdb/) | [许可证](https://github.com/microsoft/microsoft-pdb/blob/master/LICENSE) |
