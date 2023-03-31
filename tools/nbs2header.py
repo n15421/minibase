@@ -29,7 +29,6 @@ def process_nbs(nbs: pynbs.File) -> list[ProcessedNote]:
 
     time_per_tick = 20 / header.tempo * 50
 
-    last_time: int = 0
     processed: list[ProcessedNote] = []
     for note in notes:
         layer = layers[note.layer]
@@ -41,8 +40,7 @@ def process_nbs(nbs: pynbs.File) -> list[ProcessedNote]:
         pitch = 2 ** ((final_key - 45) / 12)
 
         note_time = int(note.tick * time_per_tick)
-        sleep_time = note_time - last_time
-        last_time = note_time
+        sleep_time = note_time
 
         processed.append(ProcessedNote(sleep_time, sound_index, volume, pitch))
 

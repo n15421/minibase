@@ -111,58 +111,17 @@ TMHOOK(level_construct, struct level*,
  *
  * 0: player pointer
  * 1: Last played to position
- * 2: Next play to position
+ * 2: Start time
  */
-unsigned long long g_note_queue[MAX_ONLINE_PLAYER][3];
-
-DWORD WINAPI make_note_queue_thread(LPVOID lpParameter)
-{
-    const char *player_xuid = (const char *)lpParameter;
-    struct player *player = get_player_by_xuid(g_level, player_xuid);
-    const char *player_name = get_name_tag((struct actor *)player);
-    char start_msg[128] = "Start playing music: ";
-    char stop_msg[128] = "Stop playing music: ";
-    int player_index = 0;
-    LARGE_INTEGER start_time, end_time, elapsed_time, frequency;
-
-    QueryPerformanceFrequency(&frequency);
-
-    strcat(start_msg, player_name);
-    strcat(stop_msg, player_name);
-
-    while (player) {
-        for (int i = 0; i < MAX_ONLINE_PLAYER; i++) {
-            if (g_note_queue[i][0] == strtoull(get_player_xuid(player), NULL, 10)) {
-                player_index = i;
-                break;
-            }
-        }
-
-        server_logger(start_msg, INFO);
-        for (int j = 0; j < MAX_NOTE_LEN; j++) {
-            QueryPerformanceCounter(&start_time);
-            elapsed_time.QuadPart = 0;
-
-            while (elapsed_time.QuadPart < (LONGLONG)(NOTE_DATA[j][0] * frequency.QuadPart / 1000)) {
-                QueryPerformanceCounter(&end_time);
-                elapsed_time.QuadPart = end_time.QuadPart - start_time.QuadPart;
-            }
-
-            g_note_queue[player_index][2] = j;
-        }
-        server_logger(stop_msg, INFO);
-        player = get_player_by_xuid(g_level, player_xuid);
-    }
-    memset(g_note_queue[player_index], 0, sizeof(g_note_queue[player_index]));
-    return 0;
-}
+long long g_note_queue[MAX_ONLINE_PLAYER][3];
 
 void send_music_sound_packet(void)
 {
     struct player *player = NULL;
+    const char *player_name;
+    struct vec3 *player_pos;
     char player_xuid[PLAYER_XUID_STR_LEN];
-    struct vec3 *pos;
-    unsigned long long note_index = 0;
+    long long note_index = 0;
     const char *sound_name;
     float volume;
     float pitch;
@@ -170,23 +129,41 @@ void send_music_sound_packet(void)
     for (int i = 0; i < MAX_ONLINE_PLAYER; i++) {
         if (g_note_queue[i][0] == 0)
             continue;
-
-        sprintf_s(player_xuid, PLAYER_XUID_STR_LEN, "%llu", g_note_queue[i][0]);
+        sprintf_s(player_xuid, PLAYER_XUID_STR_LEN, "%lld", g_note_queue[i][0]);
         player = get_player_by_xuid(g_level, player_xuid);
+        if (!player) {
+            memset(g_note_queue[i], 0, sizeof(g_note_queue[i]));
+            continue;
+        }
+        player_name = get_name_tag((struct actor *)player);
+        char start_msg[128] = "Start playing music: ";
+        char stop_msg[128] = "Stop playing music: ";
+        strcat(start_msg, player_name);
+        strcat(stop_msg, player_name);
 
-        for (note_index = g_note_queue[i][1]; note_index < g_note_queue[i][2]; note_index++) {
-            if (!player) {
-                memset(g_note_queue[i], 0, sizeof(g_note_queue[i]));
-                break;
-            }
-            pos = actor_get_pos((struct actor *)player);
+        player_pos = actor_get_pos((struct actor *)player);
+        if (g_note_queue[i][1] == 0)
+            server_logger(start_msg, INFO);
+
+        for (note_index = g_note_queue[i][1];
+            (time_t)NOTE_DATA[note_index][0] + g_note_queue[i][2] < clock()
+            && note_index < MAX_NOTE_LEN;
+            note_index++) {
+
             sound_name = BUILTIN_INSTRUMENT[(int)(NOTE_DATA[note_index][1])];
             volume = NOTE_DATA[note_index][2];
             pitch = NOTE_DATA[note_index][3];
 
-            send_play_sound_packet(player, sound_name, *pos, volume, pitch);
+            send_play_sound_packet(player, sound_name, *player_pos, volume, pitch);
         }
-        g_note_queue[i][1] = g_note_queue[i][2];
+
+        if (note_index < MAX_NOTE_LEN) {
+            g_note_queue[i][1] = note_index;
+        } else {
+            g_note_queue[i][1] = 0;
+            g_note_queue[i][2] = (time_t)clock();
+            server_logger(stop_msg, INFO);
+        }
     }
 }
 
@@ -201,12 +178,11 @@ TMHOOK(on_player_join, void,
 
     for (int i = 0; i < MAX_ONLINE_PLAYER; i++) {
         if (g_note_queue[i][0] == 0) {
-            g_note_queue[i][0] = strtoull(player_xuid, NULL, 10);
+            g_note_queue[i][0] = strtoll(player_xuid, NULL, 10);
+            g_note_queue[i][2] = (time_t)clock();
             break;
         }
     }
-    HANDLE hThread = CreateThread(NULL, 0, make_note_queue_thread, (LPVOID)player_xuid, 0, NULL);
-
     on_player_join.original(_this, id, pkt);
 }
 
