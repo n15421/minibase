@@ -82,7 +82,7 @@ TMHOOK(on_player_attack, bool,
 {
     struct vec3 *pos = actor_get_pos((struct actor *)player);
 
-    send_play_sound_packet(player, "ambient.weather.thunder", *pos, 1, 1);
+    send_play_sound_packet(player, "ambient.weather.thunder", pos, 1, 1);
 
 	float attack_damage = calc_attack_damage((struct actor *)player, actor);
     const char *player_name = get_name_tag((struct actor *)player);
@@ -154,7 +154,7 @@ void send_music_sound_packet(void)
             volume = NOTE_DATA[note_index][2];
             pitch = NOTE_DATA[note_index][3];
 
-            send_play_sound_packet(player, sound_name, *player_pos, volume, pitch);
+            send_play_sound_packet(player, sound_name, player_pos, volume, pitch);
         }
 
         if (note_index < MAX_NOTE_LEN) {

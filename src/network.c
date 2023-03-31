@@ -19,7 +19,7 @@ inline void send_network_packet(struct player *player, uintptr_t pkt)
 }
 
 void send_play_sound_packet(struct player *player, const char *sound_name,
-			 				struct vec3 pos, float volume, float pitch)
+			 				struct vec3 *pos, float volume, float pitch)
 {
 	uintptr_t pkt = create_packet(86);
 
@@ -29,7 +29,7 @@ void send_play_sound_packet(struct player *player, const char *sound_name,
 	TMCALL("??0PlaySoundPacket@@QEAA@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBVVec3@@MM@Z",
 		uintptr_t (*)(uintptr_t pkt, struct string *sound_name,
 					 	struct vec3 *pos, float volume, float pitch),
-		pkt, sound_name_cpp_str, &pos, volume, pitch);
+		pkt, sound_name_cpp_str, pos, volume, pitch);
 
 	// memcpy((void *)(pkt + 48), sound_name_cpp_str, 32);
 
