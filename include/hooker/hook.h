@@ -81,11 +81,15 @@
     ret_type _detour_##name(__VA_ARGS__)
 
 
-#define TMCALL(rva_OR_sym, func_proto, ...)                 \
+#define TMCALL(sym, func_proto, ...)                        \
     ((func_proto)                                           \
-    (atoi(rva_OR_sym)                                       \
-        ? rva2va(atoi(rva_OR_sym))                          \
-        : dlsym(rva_OR_sym)))                               \
+    (dlsym(sym)))                                           \
+    (__VA_ARGS__)
+
+
+#define VIRTUAL_CALL(ptr, func_proto, ...)                  \
+    ((func_proto)                                           \
+    ((void *)ptr))                                          \
     (__VA_ARGS__)
 
 
@@ -100,12 +104,6 @@
 // for uintptr_t
 #define PTR_OFFSET(ptr, offset)                             \
     ((uintptr_t)ptr + offset)
-
-
-#define VIRTUAL_CALL(ret_type, ptr, offset, ...)            \
-    (*(ret_type(**)(void*, ##__VA_ARGS__))                  \
-    (DEREFERENCE(uintptr_t, ptr, offset)))                  \
-    (ptr, ##__VA_ARGS__)
 
 
 #ifdef __cplusplus
