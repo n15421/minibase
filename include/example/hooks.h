@@ -6,5 +6,6 @@
 #include "network.h"
 #include "actor.h"
 #include "level.h"
+#include "db_storage.h"
 
 bool init_hooks(void);

@@ -4,6 +4,7 @@
 
 extern struct string string;
 extern struct level *g_level;
+extern struct db_storage *g_db_storage;
 
 bool server_started = false;
 TMHOOK(on_server_started, void,
@@ -194,14 +195,24 @@ TMHOOK(on_tick, void,
     on_tick.original(level);
 }
 
+TMHOOK(db_storage_construct, struct db_storage *,
+    "??0DBStorage@@QEAA@UDBStorageConfig@@V?$not_null@V?$NonOwnerPointer@VLevelDbEnv@@@Bedrock@@@gsl@@@Z",
+    __int64 a1, struct DBStorageEnvironmentChain *a2, struct gsl_details **a3)
+{
+    return g_db_storage = db_storage_construct.original(a1, a2, a3);
+}
+
+
 bool init_hooks(void)
 {
+    level_construct.init(&level_construct);
+    db_storage_construct.init(&db_storage_construct);
+    
     on_console_input.init(&on_console_input);
     on_server_started.init(&on_server_started);
     on_console_output.init(&on_console_output);
     on_liquid_spread.init(&on_liquid_spread);
     on_player_attack.init(&on_player_attack);
-    level_construct.init(&level_construct);
     on_player_join.init(&on_player_join);
     on_tick.init(&on_tick);
 
