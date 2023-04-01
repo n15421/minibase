@@ -37,7 +37,6 @@ add_compile_options(
     /EHsc
     /FC
     /GL
-    /MD
     /nologo
     /permissive-
     /sdl
