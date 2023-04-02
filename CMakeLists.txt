@@ -1,13 +1,12 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(hooker)
+project(littlehooker)
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_BUILD_TYPE Debug)
 
 file(GLOB_RECURSE SRC_FILES_DIR
     ${PROJECT_SOURCE_DIR}/src/*.c
-    ${PROJECT_SOURCE_DIR}/src/*.h
 )
 
 include_directories(
@@ -50,15 +49,10 @@ add_link_options(
     /INCREMENTAL:NO
 )
 
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+add_library(littlehooker STATIC ${SRC_FILES_DIR})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /utf-8")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:MSVCRTD")
+set_target_properties(littlehooker PROPERTIES OUTPUT_NAME "littlehooker")
 
-add_library(hooker SHARED ${SRC_FILES_DIR})
-
-set_target_properties(hooker PROPERTIES OUTPUT_NAME "hooker")
-
-target_link_libraries(hooker 
+target_link_libraries(littlehooker 
 	"${CMAKE_SOURCE_DIR}/lib/minhook.x64.lib"
 )

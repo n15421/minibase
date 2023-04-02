@@ -1,4 +1,6 @@
-#include <hooker/hook.h>
+#include <littlehooker/littlehooker.h>
+#include <littlehooker/cvdump_exe_res.h>
+#include <littlehooker/hashmap.h>
 
 //////////////////// SECTION ////////////////////
 enum section_type {
@@ -237,7 +239,7 @@ void check_server_update(void)
 }
 
 //////////////////// Hooker ////////////////////
-bool hooker_init(void)
+bool lh_init(void)
 {
     load_hashmap_from_file(SYM_CACHE_FILE);
     if (!init_section_infos())
@@ -249,7 +251,7 @@ bool hooker_init(void)
     return true;
 }
 
-bool hooker_uninit(void)
+bool lh_uninit(void)
 {
     save_hashmap_to_file(SYM_CACHE_FILE);
     free_hashmap();
@@ -259,7 +261,7 @@ bool hooker_uninit(void)
     return true;
 }
 
-bool hooker_enable_all_hook(void)
+bool lh_enable_all_hook(void)
 {
     if (MH_QueueEnableHook(MH_ALL_HOOKS) != MH_OK)
         return false;
@@ -269,7 +271,7 @@ bool hooker_enable_all_hook(void)
     return true;
 }
 
-bool hooker_disable_all_hook(void)
+bool lh_disable_all_hook(void)
 {
     if (MH_QueueDisableHook(MH_ALL_HOOKS)!= MH_OK)
         return false;

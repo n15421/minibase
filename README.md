@@ -1,29 +1,24 @@
-# hooker
+# LittleHooker
 
-[![wakatime](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/93f45b7b-afeb-4f15-a5cd-6fabd00b17c9.svg)](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/93f45b7b-afeb-4f15-a5cd-6fabd00b17c9)
+[![wakatime](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/70dbba0a-b019-486c-848a-d32bdf92f3bb.svg)](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/70dbba0a-b019-486c-848a-d32bdf92f3bb)
 
-[![CodeFactor](https://www.codefactor.io/repository/github/willowsaucer/hooker/badge)](https://www.codefactor.io/repository/github/willowsaucer/hooker)
+[![CodeFactor](https://www.codefactor.io/repository/github/willowsaucer/hooker/badge)](https://www.codefactor.io/repository/github/willowsaucer/littlehooker)
 
 English | [简体中文](README_ZH.md)
 
-This HOOK framework is for ``Bedrock Dedicated Server``, based on ``MinHook`` for secondary API packaging .
+This project is written for ``Bedrock Dedicated Server`` and the HOOK framework, based on ``MinHook`` for secondary API packaging.
 Simplifies the development process and improves development efficiency.
 
 ## Usage
-directly to the project ``include/hooker``, ``src/hooker`` folder and ``lib/minhook.x64d.lib`` add to your project and include ``include/hooker/hook.h`` can be used
+Directly add this project ``include/littlehooker`` folder, ``lib/minhook.x64d.lib`` and the downloaded lib file in Action to your project and include ``include/littlehooker/littlehooker.h`` to Use the
 
 ## Example
-The sample code is located in ``src/dllmain.c`` and ``src/hooks.c`` and currently implements the following functions:
-1. output messages like protocol version when the server is started
-2. listen to console input and output and print messages
-3. disable lava flow by listening to the liquid flow function
-4. display the damage generated when a player attacks and send a sound packet to them to make them hear the sound of thunder
-5. Play NBS music on a loop after a player enters the server
+[LittleHooker-example](https://github.com/WillowSauceR/LittleHooker-example)
 
 ## License
 
 | Project                                                      | License                                                                   |
 | ------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| [minhook](https://github.com/TsudaKageyu/minhook)            | [License](https://github.com/TsudaKageyu/minhook/blob/master/LICENSE.txt) |
-| [uthash](https://github.com/troydhanson/uthash)              | [License](https://github.com/troydhanson/uthash/blob/master/LICENSE)      |
-| [microsoft-pdb](https://github.com/microsoft/microsoft-pdb/) | [License](https://github.com/microsoft/microsoft-pdb/blob/master/LICENSE) |
+| [minhook](https://github.com/TsudaKageyu/minhook)            | [license](https://github.com/TsudaKageyu/minhook/blob/master/LICENSE.txt) |
+| [uthash](https://github.com/troydhanson/uthash)              | [license](https://github.com/troydhanson/uthash/blob/master/LICENSE)      |
+| [microsoft-pdb](https://github.com/microsoft/microsoft-pdb/) | [license](https://github.com/microsoft/microsoft-pdb/blob/master/LICENSE) |

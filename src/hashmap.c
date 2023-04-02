@@ -1,4 +1,4 @@
-#include <hooker/hashmap.h>
+#include <littlehooker/hashmap.h>
 
 
 struct entry {

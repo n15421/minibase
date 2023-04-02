@@ -1,14 +1,15 @@
 #pragma once
 #pragma comment(lib, "minhook.x64.lib")
 #include "minhook/MinHook.h"
-#include "cvdump_exe_res.h"
-#include "hashmap.h"
+
+#include <windows.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
+
 
 #define SYM_FILE "bedrock_server_sym.txt"
 #define SYM_CACHE_FILE "bedrock_server_sym_cache.bin"
@@ -25,7 +26,8 @@
 #define BDS_MOD_EXE_PATH BDS_FILE_NAME "_mod" ".exe"
 #define BDS_PDB_PATH BDS_FILE_NAME ".pdb"
 
-#define TMHOOK(name, ret_type, rva_OR_sym, ...)             \
+
+#define TLHOOK(name, ret_type, rva_OR_sym, ...)             \
     typedef ret_type (*_##name##_t)(__VA_ARGS__);           \
     _##name##_t _original_##name = NULL;                    \
     typedef struct _##name _##name##_struct;                \
@@ -83,7 +85,7 @@
     ret_type _detour_##name(__VA_ARGS__)
 
 
-#define TMCALL(sym, func_proto, ...)                        \
+#define TLCALL(sym, func_proto, ...)                        \
     ((func_proto)                                           \
     (dlsym(sym)))                                           \
     (__VA_ARGS__)
@@ -126,10 +128,10 @@ int get_network_protocol_version(void);
 
 void check_server_update(void);
 
-bool hooker_init(void);
-bool hooker_uninit(void);
-bool hooker_enable_all_hook(void);
-bool hooker_disable_all_hook(void);
+bool lh_init(void);
+bool lh_uninit(void);
+bool lh_enable_all_hook(void);
+bool lh_disable_all_hook(void);
 
 #ifdef __cplusplus
 }
