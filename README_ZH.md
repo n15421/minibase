@@ -2,7 +2,7 @@
 
 [![wakatime](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/70dbba0a-b019-486c-848a-d32bdf92f3bb.svg)](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/70dbba0a-b019-486c-848a-d32bdf92f3bb)
 
-[![CodeFactor](https://www.codefactor.io/repository/github/willowsaucer/hooker/badge)](https://www.codefactor.io/repository/github/willowsaucer/littlehooker)
+[![CodeFactor](https://www.codefactor.io/repository/github/willowsaucer/littlehooker/badge)](https://www.codefactor.io/repository/github/willowsaucer/littlehooker)
 
 [English](README.md) | 简体中文
 
