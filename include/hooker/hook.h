@@ -20,8 +20,10 @@
             CVDUMP_EXE_PATH " not found, please download it from " CVDUMP_URL \
             " and then put it in the same level folder as bedrock_server.pdb\n"
 
-#define BDS_EXE_PATH "bedrock_server.exe"
-#define BDS_PDB_PATH "bedrock_server.pdb"
+#define BDS_FILE_NAME "bedrock_server"
+#define BDS_EXE_PATH BDS_FILE_NAME ".exe"
+#define BDS_MOD_EXE_PATH BDS_FILE_NAME "_mod" ".exe"
+#define BDS_PDB_PATH BDS_FILE_NAME ".pdb"
 
 #define TMHOOK(name, ret_type, rva_OR_sym, ...)             \
     typedef ret_type (*_##name##_t)(__VA_ARGS__);           \

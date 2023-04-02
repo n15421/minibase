@@ -35,8 +35,11 @@ bool init_section_infos(void)
 
     HANDLE h_file = CreateFileA(BDS_EXE_PATH, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (h_file == INVALID_HANDLE_VALUE) {
-        printf("Error: cannot open file %s.\n", BDS_EXE_PATH);
-        return false;
+        h_file = CreateFileA(BDS_MOD_EXE_PATH, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (h_file == INVALID_HANDLE_VALUE) {
+            printf("Error: cannot open file %s.\n", BDS_EXE_PATH);
+            return false;
+        }
     }
 
     DWORD bytes_read = 0;
@@ -108,8 +111,11 @@ void split_sym_line(const char *line, unsigned short *type, unsigned int *rva_va
 void read_static_data(long offset, void *data, size_t size)
 {
     FILE *fp = fopen(BDS_EXE_PATH, "rb");
-    if (!fp)
-        return;
+    if (!fp) {
+        fp = fopen(BDS_MOD_EXE_PATH, "rb");
+        if (!fp)
+            return;
+    }
     fseek(fp, offset, SEEK_SET);
     fread(data, size, 1, fp);
     fclose(fp);
