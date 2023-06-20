@@ -23,8 +23,8 @@ jobs:
         run: |
           New-Item -ItemType directory -Path build
           cmake -S . -B build
-          cmake --build build/ --config Debug -j
           cmake --build build/ --config Release -j
+          cmake --build build/ --config RelWithDebInfo -j
 
       - name: Upload build files
         uses: actions/upload-artifact@v3
