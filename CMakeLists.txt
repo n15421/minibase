@@ -35,7 +35,6 @@ add_compile_options(
     /diagnostics:column
     /EHsc
     /FC
-    /O2
     /nologo
     /permissive-
     /sdl
