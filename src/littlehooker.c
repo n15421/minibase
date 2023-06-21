@@ -273,9 +273,9 @@ bool lh_enable_all_hook(void)
 
 bool lh_disable_all_hook(void)
 {
-    if (MH_QueueDisableHook(MH_ALL_HOOKS)!= MH_OK)
+    if (MH_QueueDisableHook(MH_ALL_HOOKS) != MH_OK)
         return false;
-    if (MH_ApplyQueued()!= MH_OK)
+    if (MH_ApplyQueued() != MH_OK)
         return false;
 
     return true;
