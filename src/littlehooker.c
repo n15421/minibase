@@ -98,7 +98,7 @@ bool hook_func(void *hook_func, void *detour_func, void *original_func)
 }
 
 //////////////////////////// SYM API /////////////////////////
-inline void *rva2va(unsigned int rva)
+void *rva2va(unsigned int rva)
 {
     uintptr_t base_addr = (uintptr_t)GetModuleHandle(NULL);
     return (void *)(base_addr + rva);
@@ -194,7 +194,7 @@ bool release_cvdump_exe(void)
     }
 }
 
-inline int gen_sym_file(void)
+int gen_sym_file(void)
 {
     if (!release_cvdump_exe())
         return -1;
@@ -204,7 +204,7 @@ inline int gen_sym_file(void)
     return ret_code;
 }
 
-inline int re_gen_sym_files(void)
+int re_gen_sym_files(void)
 {
     remove(SYM_FILE);
     remove(SYM_CACHE_FILE);
