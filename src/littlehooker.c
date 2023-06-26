@@ -209,7 +209,7 @@ int re_gen_sym_files(void)
     remove(SYM_FILE);
     remove(SYM_CACHE_FILE);
     free_hashmap();
-    save_hashmap_to_file(SYM_FILE);
+    save_hashmap_to_file(SYM_CACHE_FILE);
     return gen_sym_file();
 }
 
