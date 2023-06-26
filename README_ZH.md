@@ -10,7 +10,7 @@
 简化了开发流程，提高了开发效率。
 
 ## 用法
-直接将本项目的``include/littlehooker``文件夹、``lib/minhook.x64d.lib``以及Action中下载的lib文件添加到你的项目中，并包含``include/littlehooker/littlehooker.h``即可使用
+直接将本项目的``include/littlehooker``文件夹、``lib/minhook.x64.lib``以及Action中下载的lib文件添加到你的项目中，并包含``include/littlehooker/littlehooker.h``即可使用
 
 ## 示例
 [LittleHooker-example](https://github.com/ExtcanaRy/LittleHooker-example)

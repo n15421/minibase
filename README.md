@@ -10,7 +10,7 @@ This project is written for ``Bedrock Dedicated Server`` and the HOOK framework,
 Simplifies the development process and improves development efficiency.
 
 ## Usage
-Directly add this project ``include/littlehooker`` folder, ``lib/minhook.x64d.lib`` and the downloaded lib file in Action to your project and include ``include/littlehooker/littlehooker.h`` to Use the
+Directly add this project ``include/littlehooker`` folder, ``lib/minhook.x64.lib`` and the downloaded lib file in Action to your project and include ``include/littlehooker/littlehooker.h`` to Use the
 
 ## Example
 [LittleHooker-example](https://github.com/ExtcanaRy/LittleHooker-example)
