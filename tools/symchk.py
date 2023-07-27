@@ -142,7 +142,7 @@ def get_file_list(source_code_path) -> list:
     file_list = []
     for root, dirs, files in os.walk(source_code_path):
         for file in files:
-            if ".h" in file or ".cpp" in file:
+            if any(file.endswith(f".{x}") for x in ['h', 'hpp', 'c', 'cpp']):
                 file_list.append(os.path.join(root, file))
     return file_list
 
