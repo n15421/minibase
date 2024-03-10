@@ -25,7 +25,7 @@ void load_plugins()
             int path_len = strlen(PLUGIN_PATH) + strlen(filenames[i]) + 2;
             char *plugin_path = (char *)malloc(path_len);
             sprintf(plugin_path, "%s/%s", PLUGIN_PATH, filenames[i]);
-            printf("Loading %s\n", plugin_path);
+            printf("Loading %s\n", filenames[i]);
             HMODULE module = LoadLibrary(plugin_path);
             free(plugin_path);
             if (!module) {
