@@ -38,18 +38,19 @@ void load_plugins()
 }
 
 
-void wait_for_debugger() {
-	while (!IsDebuggerPresent())
+void wait_for_debugger()
+{
+	while (!IsDebuggerPresent()) {
 		Sleep(200);
+    }
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD ul_reason_for_call,
 	LPVOID lpReserved)
-{ 
+{
 	switch (ul_reason_for_call) { 
 	case DLL_PROCESS_ATTACH:
-        wait_for_debugger();
         DWORD mode;
         SetConsoleCP(CP_UTF8);
         SetConsoleOutputCP(CP_UTF8);
