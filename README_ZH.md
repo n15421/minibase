@@ -1,8 +1,8 @@
-# LittleHooker
+# LightBase
 
-[![wakatime](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/70dbba0a-b019-486c-848a-d32bdf92f3bb.svg)](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/70dbba0a-b019-486c-848a-d32bdf92f3bb)
+[![wakatime](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/018e2688-1e67-42de-90ed-d3258221b525.svg)](https://wakatime.com/badge/user/2838d0e1-1416-4f45-bc46-cbda8f4d9e75/project/018e2688-1e67-42de-90ed-d3258221b525)
 
-[![CodeFactor](https://www.codefactor.io/repository/github/extcanary/littlehooker/badge)](https://www.codefactor.io/repository/github/extcanary/littlehooker)
+[![CodeFactor](https://www.codefactor.io/repository/github/extcanary/lightbase/badge)](https://www.codefactor.io/repository/github/extcanary/lightbase)
 
 [English](README.md) | 简体中文
 
@@ -10,10 +10,10 @@
 简化了开发流程，提高了开发效率。
 
 ## 用法
-直接将本项目的``include/littlehooker``文件夹、``lib/minhook.x64.lib``以及Action中下载的lib文件添加到你的项目中，并包含``include/littlehooker/littlehooker.h``即可使用
+todo
 
 ## 示例
-[LittleHooker-example](https://github.com/ExtcanaRy/LittleHooker-example)
+[LightBase-example](https://github.com/ExtcanaRy/LightBase-example)
 
 ## 许可证
 

@@ -1,6 +1,6 @@
-#include <littlehooker/littlehooker.h>
-#include <littlehooker/cvdump_exe_res.h>
-#include <littlehooker/hashmap.h>
+#include <lightbase/lightbase.h>
+#include <lightbase/cvdump_exe_res.h>
+#include <lightbase/hashmap.h>
 
 //////////////////// SECTION ////////////////////
 enum section_type {
@@ -97,6 +97,11 @@ bool hook_func(void *hook_func, void *detour_func, void *original_func)
     return true;
 }
 
+
+bool unhook_func(void *hook_func)
+{
+    return MH_RemoveHook(hook_func) == MH_OK ? true : false;                          
+}
 //////////////////////////// SYM API /////////////////////////
 void *rva2va(unsigned int rva)
 {
@@ -200,7 +205,6 @@ int gen_sym_file(void)
         return -1;
     printf("Symbol file is being generated...\n");
     int ret_code = system(CVDUMP_EXE_PATH CVDUMP_EXEC_ARGS BDS_PDB_PATH " > " SYM_FILE );
-    remove(CVDUMP_EXE_PATH);
     return ret_code;
 }
 
@@ -239,8 +243,9 @@ void check_server_update(void)
 }
 
 //////////////////// Hooker ////////////////////
-bool lh_init(void)
+bool lb_init(void)
 {
+    make_directory(LB_PATH);
     load_hashmap_from_file(SYM_CACHE_FILE);
     if (!init_section_infos())
         return false;
@@ -251,7 +256,7 @@ bool lh_init(void)
     return true;
 }
 
-bool lh_uninit(void)
+bool lb_uninit(void)
 {
     save_hashmap_to_file(SYM_CACHE_FILE);
     free_hashmap();
@@ -261,7 +266,7 @@ bool lh_uninit(void)
     return true;
 }
 
-bool lh_enable_all_hook(void)
+bool lb_enable_all_hook(void)
 {
     if (MH_QueueEnableHook(MH_ALL_HOOKS) != MH_OK)
         return false;
@@ -271,7 +276,7 @@ bool lh_enable_all_hook(void)
     return true;
 }
 
-bool lh_disable_all_hook(void)
+bool lb_disable_all_hook(void)
 {
     if (MH_QueueDisableHook(MH_ALL_HOOKS) != MH_OK)
         return false;

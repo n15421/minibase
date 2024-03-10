@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(littlehooker)
+project(lightbase)
 
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_BUILD_TYPE Debug)
 
 file(GLOB_RECURSE SRC_FILES_DIR
@@ -18,39 +18,33 @@ link_directories(
 )
 
 add_definitions(
-    -D"NDEBUG"
-    -D"NOMINMAX"
-    -D"TEMPLATE_EXPORTS"
-    -D"UNICODE"
-    -D"WIN32_LEAN_AND_MEAN"
-    -D"_AMD64_"
     -D"_CRT_SECURE_NO_WARNINGS"
-    -D"_UNICODE"
-    -D"_USRDLL"
-    -D"_WINDLL"
-    -D"_WINDOWS"
+    -DWIN32_LEAN_AND_MEAN
+    -D"LIGHTBASE_EXPORTS"
 )
 
 add_compile_options(
     /diagnostics:column
-    /EHsc
     /FC
+    /GL
     /nologo
     /permissive-
     /sdl
     /utf-8
-    /Zc:inline
     /Zi
 )
 
 add_link_options(
+    /LTCG
     /INCREMENTAL:NO
 )
 
-add_library(littlehooker STATIC ${SRC_FILES_DIR})
+add_library(lightbase SHARED ${SRC_FILES_DIR})
 
-set_target_properties(littlehooker PROPERTIES OUTPUT_NAME "littlehooker")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:MSVCRTD")
 
-target_link_libraries(littlehooker 
+set_target_properties(lightbase PROPERTIES OUTPUT_NAME "lightbase")
+
+target_link_libraries(lightbase 
 	"${CMAKE_SOURCE_DIR}/lib/minhook.x64.lib"
 )
