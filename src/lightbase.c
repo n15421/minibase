@@ -245,6 +245,7 @@ void check_server_update(void)
 //////////////////// Hooker ////////////////////
 bool lb_init(void)
 {
+    make_directory(PLUGIN_PATH);
     make_directory(LB_PATH);
     load_hashmap_from_file(SYM_CACHE_FILE);
     if (!init_section_infos())

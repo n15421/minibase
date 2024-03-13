@@ -18,7 +18,8 @@
 #include <string.h>
 #include <stdint.h>
 
-#define LB_PATH "plugins\\lb\\"
+#define PLUGIN_PATH "plugins\\"
+#define LB_PATH PLUGIN_PATH "lb\\"
 #define SYM_FILE LB_PATH "symbols.txt"
 #define SYM_CACHE_FILE LB_PATH "sym_cache.bin"
 
