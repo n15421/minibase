@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <uthash/uthash.h>
+#include <win/uthash/uthash.h>
 
 #define SYM_MAX_LEN 4096
 

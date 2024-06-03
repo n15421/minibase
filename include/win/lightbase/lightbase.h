@@ -1,6 +1,6 @@
 #pragma once
 #pragma comment(lib, "minhook.x64.lib")
-#include <minhook/MinHook.h>
+#include <win/minhook/MinHook.h>
 #include "file_utils.h"
 
 #ifdef LIGHTBASE_EXPORTS

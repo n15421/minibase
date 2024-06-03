@@ -1,6 +1,6 @@
-#include <lightbase/lightbase.h>
-#include <lightbase/cvdump_exe_res.h>
-#include <lightbase/hashmap.h>
+#include <win/lightbase/lightbase.h>
+#include <win/lightbase/cvdump_exe_res.h>
+#include <win/lightbase/hashmap.h>
 
 //////////////////// SECTION ////////////////////
 enum section_type {

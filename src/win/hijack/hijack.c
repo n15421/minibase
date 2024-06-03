@@ -1,4 +1,4 @@
-#include <lightbase/hijack/hijack.h>
+#include <win/lightbase/hijack/hijack.h>
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD ul_reason_for_call,

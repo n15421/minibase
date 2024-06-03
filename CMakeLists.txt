@@ -73,10 +73,10 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:MSVCRT
 
 # lightbase main
 file(GLOB_RECURSE SRC_FILES_DIR
-    ${PROJECT_SOURCE_DIR}/src/file_utils.c
-    ${PROJECT_SOURCE_DIR}/src/hashmap.c
-    ${PROJECT_SOURCE_DIR}/src/lightbase.c
-    ${PROJECT_SOURCE_DIR}/src/loader.c
+    ${PROJECT_SOURCE_DIR}/src/win/file_utils.c
+    ${PROJECT_SOURCE_DIR}/src/win/hashmap.c
+    ${PROJECT_SOURCE_DIR}/src/win/lightbase.c
+    ${PROJECT_SOURCE_DIR}/src/win/loader.c
 )
 
 add_library(lightbase SHARED ${SRC_FILES_DIR})
@@ -87,7 +87,7 @@ set_target_properties(lightbase PROPERTIES OUTPUT_NAME "lightbase")
 
 # hijack for win
 file(GLOB_RECURSE HIJACK_SRC_FILES_DIR
-    ${PROJECT_SOURCE_DIR}/src/hijack/hijack.c
+    ${PROJECT_SOURCE_DIR}/src/win/hijack/hijack.c
 )
 
 add_library(hijack SHARED ${HIJACK_SRC_FILES_DIR})

@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include <dirent/dirent.h>
+#include <win/dirent/dirent.h>
 
 void make_directory(const char *directory);
 char **get_filenames(const char *directory, int *count);
