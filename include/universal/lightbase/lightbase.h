@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#ifdef LINUX
+#ifdef __linux__
 void lb_init() __attribute__((constructor));
 #endif
 
