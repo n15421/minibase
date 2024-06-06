@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <linux/lightbase/cache.h>
+#include <universal/lightbase/cache.h>
 
 struct sym_cache g_lb_sym_l1_cache_tab[LB_SYM_L1_CACHE_SIZE];
 struct sym_cache g_lb_sym_l2_cache_tab[LB_SYM_L2_CACHE_SIZE];
@@ -33,6 +33,8 @@ void *lb_sym_l1_cache_find(const char *in_sym)
 			return g_lb_sym_l1_cache_tab[i].addr;
 		}
 	}
+
+	return NULL;
 }
 void *lb_sym_l2_cache_find(const char *in_sym)
 {
@@ -44,6 +46,8 @@ void *lb_sym_l2_cache_find(const char *in_sym)
 			return g_lb_sym_l2_cache_tab[i].addr;
 		}
 	}
+
+	return NULL;
 }
 
 void *lb_sym_cache_find(const char *in_sym)

@@ -5,37 +5,8 @@
 #include <sys/dir.h>
 #include <sys/stat.h>
 
-#include <linux/lightbase/lightbase.h>
-#include <linux/lightbase/symbol.h>
-
-long long g_lb_base_addr;
-
-void get_base_addr()
-{
-	long long addr = 0;
-	char str_addr[13];
-
-	str_addr[12] = 0;
-
-	FILE *f = fopen("/proc/self/maps", "rb");
-	fread(str_addr, 12, 1, f);
-	fclose(f);
-	sscanf(str_addr, "%llx", &g_lb_base_addr);
-
-	printf("[LightBase] [INFO] Base addr: %p\n", g_lb_base_addr);
-}
-
-int load_symbols()
-{
-	FILE *f = fopen("bedrock_server_symbols.debug", "rb");
-	if (!f) {
-		printf("[LightBase] [ERROR] Failed to open bedrock_server_symbols.debug: %s.\n", strerror(errno));
-
-		return -1;
-	}
-
-	return lb_load_symbols(f);
-}
+#include <universal/lightbase/lightbase.h>
+#include <universal/lightbase/symbol.h>
 
 void load_plugins()
 {
@@ -101,10 +72,10 @@ void lb_init()
 	printf("[LightBase] \n");
 	printf("[LightBase] -------------------------------------------------------------------------------------------------------------------------\n");
 
-	get_base_addr();
-	ret = load_symbols();
+	ret = lb_load_symbols("bedrock_server_symbols.debug");
 	if (ret == -1) {
 		return;
 	}
+
 	load_plugins();
 }

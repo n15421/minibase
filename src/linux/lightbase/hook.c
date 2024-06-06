@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include <linux/lightbase/hook.h>
-#include <linux/lightbase/symbol.h>
+#include <universal/lightbase/hook.h>
+#include <universal/lightbase/symbol.h>
 #include <linux/funchook/funchook.h>
 
 extern long long g_lb_base_addr;
