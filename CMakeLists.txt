@@ -16,7 +16,7 @@ IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-add_subdirectory(dep/funchook)
+add_subdirectory(deps/funchook)
 
 include_directories(include)
 
