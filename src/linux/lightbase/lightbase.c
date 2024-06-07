@@ -53,7 +53,7 @@ void load_plugins()
 }
 
 // init
-void lb_init()
+__attribute__((constructor)) void lb_init()
 {
 	int ret = 0;
 
