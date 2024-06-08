@@ -103,7 +103,7 @@ int lb_load_symbols(const char *in_filename)
 
 void *lb_sym_find(const char *in_sym)
 {
-	void *addr = dlsym(RTLD_DEFAULT, in_sym);
+	void *addr = dlsym(NULL, in_sym);
 	if (!addr) {
 		printf("[LightBase] [DEBUG] Symbol not found in dynsym: %s.\n", in_sym);
 
