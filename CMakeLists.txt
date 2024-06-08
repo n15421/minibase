@@ -20,6 +20,8 @@ add_subdirectory(deps/funchook)
 
 include_directories(include)
 
+add_compile_options(-Wall)
+
 set(LIGHTBASE_SOURCE
     src/linux/lightbase/lightbase.c
     src/linux/lightbase/hook.c
@@ -90,7 +92,7 @@ file(GLOB_RECURSE SRC_FILES_DIR
 
 add_library(lightbase SHARED ${SRC_FILES_DIR})
 set_target_properties(lightbase PROPERTIES OUTPUT_NAME "lightbase")
-target_link_libraries(lightbase "${CMAKE_SOURCE_DIR}/lib/minhook.x64.lib")
+target_link_libraries(lightbase "${CMAKE_SOURCE_DIR}/lib/win/minhook.x64.lib")
 
 # hijack for win
 file(GLOB_RECURSE HIJACK_SRC_FILES_DIR

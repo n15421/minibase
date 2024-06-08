@@ -5,6 +5,7 @@
 #include <Windows.h>
 
 #include <universal/lightbase/lightbase.h>
+#include <universal/lightbase/symbol.h>
 #include <win/minhook/MinHook.h>
 
 bool enable_all_hook()
