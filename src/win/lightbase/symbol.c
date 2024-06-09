@@ -5,17 +5,20 @@
 
 #include <windows.h>
 
-#include <universal/lightbase/symbol.h>
-#include <universal/lightbase/cache.h>
+#include <universal/uthash/uthash.h>
 
-#pragma comment(linker, "/export:lb_sym_call_find")
+#include <universal/lightbase/lightbase.h>
+#include <universal/lightbase/symbol.h>
+
+#pragma comment(linker, "/export:lb_sym_find")
 
 #define PDBV2_SIG "Microsoft C/C++ program database 2.00\r\n\032JG\0\0"
 #define PDBV7_SIG "Microsoft C/C++ MSF 7.00\r\n\x1aDS"
 
-struct lb_sym_map {
+struct s_sym_hashmap {
 	const char *sym;
-	long long addr;
+	void *addr;
+	UT_hash_handle hh;
 };
 
 struct pdb_root_stream_map {
@@ -76,12 +79,10 @@ struct pdb_pub_sym_stream_sym {
 	char str[];
 } sub_inf;
 
-struct lb_sym_map *g_sym_map = 0;
-const char *g_sym_str_tab = 0;
+struct s_sym_hashmap *g_sym_hashmap = NULL;
+struct s_sym_hashmap *g_hashmap_sym = NULL;
 
-int g_sym_nums = 0;
-
-char *rva_base_addr = 0;
+char *g_sym_str_tab = 0;
 
 void *pdb_read_stream(FILE *in_pdb_file, int in_page_size, int *in_page_num_tab, int in_size)
 {
@@ -132,16 +133,16 @@ void *pdb_read_root_stream(FILE *in_pdb_file, int in_page_size, int in_page_num,
 
 int lb_load_symbols(const char *in_filename)
 {
-	rva_base_addr = (char *)GetModuleHandle(NULL);
+	char *rva_base_addr = (char *)GetModuleHandle(NULL);
 	rva_base_addr += *(int *)(rva_base_addr + 0x24C);
 
-	printf("[LightBase] [DEBUG] addr: %p\n", rva_base_addr);
+	lb_preinit_logger(LEVEL_DEBUG, "addr: %p\n", rva_base_addr);
 
-	printf("[LightBase] [DEBUG] Load sym\n");
+	lb_preinit_logger(LEVEL_DEBUG, "Load sym\n");
 
 	FILE *pdb_file = fopen(in_filename, "rb");
 	if (!pdb_file) {
-		printf("[LightBase] [ERROR] Open bedrock_server.pdb failed.\n");
+		lb_preinit_logger(LEVEL_ERROR, "Open bedrock_server.pdb failed.\n");
 
 		return -1;
 	}
@@ -218,34 +219,36 @@ int lb_load_symbols(const char *in_filename)
 
 	int total_str_len = 0;
 
-	g_sym_nums = 0;
-
 	for (int i = 0; i < sym_rec_nums; i++) {
 		if (pub_sym_tab[i]->type == 0x110e) {
 			total_str_len += (int)strlen(pub_sym_tab[i]->str) + 1;
-			g_sym_nums++;
 		}
 	}
 
-	(struct lb_sym_map *)g_sym_map = malloc(g_sym_nums * sizeof(struct lb_sym_map));
-	char *g_sym_str_tab = (char *)malloc(total_str_len);
+	g_sym_str_tab = (char *)malloc(total_str_len);
 	char *sym_str_tab_p = g_sym_str_tab;
 
-	int g_sym_map_i = 0;
+	int sym_nums = 0;
 
 	for (int i = 0; i < sym_rec_nums; i++) {
 		if (pub_sym_tab[i]->type == 0x110e) {
-			g_sym_map[g_sym_map_i].sym = sym_str_tab_p;
-			g_sym_map[g_sym_map_i].addr = pub_sym_tab[i]->offset;
-
 			strcpy(sym_str_tab_p, pub_sym_tab[i]->str);
-			sym_str_tab_p += strlen(pub_sym_tab[i]->str) + 1;
 
-			g_sym_map_i++;
+			g_hashmap_sym = NULL;
+			HASH_FIND_STR(g_sym_hashmap, sym_str_tab_p, g_hashmap_sym);
+			if (!g_hashmap_sym) {
+				g_hashmap_sym = malloc(sizeof(struct s_sym_hashmap));
+				g_hashmap_sym->sym = sym_str_tab_p;
+				g_hashmap_sym->addr = (void *)(rva_base_addr + pub_sym_tab[i]->offset);
+				HASH_ADD_STR(g_sym_hashmap, sym, g_hashmap_sym);
+				sym_nums++;
+			}
+
+			sym_str_tab_p += strlen(pub_sym_tab[i]->str) + 1;
 		}
 	}
 
-	printf("[LightBase] [DEBUG] Free res\n");
+	lb_preinit_logger(LEVEL_DEBUG, "Free res\n");
 
 	free(stream_tab);
 	free(root_stream);
@@ -253,39 +256,32 @@ int lb_load_symbols(const char *in_filename)
 	free(sym_rec_stream);
 	free(pub_sym_tab);
 
-	printf("[LightBase] [INFO] Loaded %d symbol(s).\n", g_sym_nums);
+	lb_preinit_logger(LEVEL_INFO, "Loaded %d symbol(s).\n", sym_nums);
 
 	return 0;
 }
 
 void *lb_sym_find(const char *in_sym)
 {
-	for (int i = 0; i < g_sym_nums; i++) {
-		if (!strcmp(in_sym, g_sym_map[i].sym)) {
-			return (void *)(rva_base_addr + g_sym_map[i].addr);
-		}
+	DWORD64 prev_tsc = 0;
+	DWORD64 curr_tsc = 0;
+
+	g_hashmap_sym = NULL;
+	prev_tsc = __rdtsc();
+	HASH_FIND_STR(g_sym_hashmap, in_sym, g_hashmap_sym);
+	curr_tsc = __rdtsc();
+	if (!g_hashmap_sym) {
+		lb_preinit_logger(LEVEL_DEBUG, "Symbol not found in hashmap: %s.\n", in_sym);
+
+		return NULL;
 	}
 
-	return NULL;
-}
+	lb_preinit_logger(LEVEL_DEBUG, "Symbol found: %s, addr: %p, time: %dns.\n", in_sym, g_hashmap_sym->addr, (int)((curr_tsc - prev_tsc) / 3.4f));
 
-void *lb_sym_call_find(const char *in_sym)
-{
-	void *addr = lb_sym_cache_find(in_sym);
-	if (!addr) {
-		printf("[LightBase] [DEBUG] Symbol not found in cache: %s.\n", in_sym);
-
-		addr = lb_sym_find(in_sym);
-		if (addr) {
-			lb_sym_cache_add(in_sym, addr);
-		}
-	}
-
-	return addr;
+	return g_hashmap_sym->addr;
 }
 
 void lb_sym_free()
 {
-	free((void *)g_sym_map);
 	free((void *)g_sym_str_tab);
 }

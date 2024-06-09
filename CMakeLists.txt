@@ -29,7 +29,7 @@ set(LIGHTBASE_SOURCE
 add_library(lightbase SHARED ${LIGHTBASE_SOURCE})
 target_link_libraries(lightbase funchook-static dl)
 target_compile_definitions(lightbase PRIVATE HASH_FUNCTION=HASH_SFH)
-target_compile_options(lightbase PRIVATE -Wall -O2)
+target_compile_options(lightbase PRIVATE -Wall)
 
 # target_compile_definitions(lightbase PRIVATE)
 # target_include_directories(lightbase PUBLIC include)
@@ -86,8 +86,11 @@ file(GLOB_RECURSE SRC_FILES_DIR
 )
 
 add_library(lightbase SHARED ${SRC_FILES_DIR})
-set_target_properties(lightbase PROPERTIES OUTPUT_NAME "lightbase")
+
+target_compile_definitions(lightbase PRIVATE HASH_FUNCTION=HASH_SFH)
 target_link_libraries(lightbase "${CMAKE_SOURCE_DIR}/lib/win/minhook.x64.lib")
+set_target_properties(lightbase PROPERTIES OUTPUT_NAME "lightbase")
+
 
 # hijack for win
 file(GLOB_RECURSE HIJACK_SRC_FILES_DIR
