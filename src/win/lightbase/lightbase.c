@@ -8,6 +8,25 @@
 #include <universal/lightbase/symbol.h>
 #include <win/minhook/MinHook.h>
 
+const char *g_log_level_str[] = {
+	"ERROR",
+	"WARN",
+	"INFO",
+	"DEBUG",
+	"TRACE"
+};
+
+int lb_preinit_logger(int in_level, const char *in_fmt, ...)
+{
+	va_list va;
+	va_start(va, in_fmt);
+	printf("[" LOADER_NAME "] [%s] ", g_log_level_str[in_level]);
+	int ret = vprintf(in_fmt, va);
+	va_end(va);
+
+	return ret;
+}
+
 bool enable_all_hook()
 {
 	if (MH_QueueEnableHook(MH_ALL_HOOKS) != MH_OK)
@@ -118,8 +137,8 @@ bool lb_init()
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule,
-					  DWORD ul_reason_for_call,
-					  LPVOID lpReserved)
+		      DWORD ul_reason_for_call,
+		      LPVOID lpReserved)
 {
 	switch (ul_reason_for_call) {
 		case DLL_PROCESS_ATTACH:
@@ -130,13 +149,17 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 			SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 
 			lb_init();
+
 			break;
 		case DLL_THREAD_ATTACH:
+
 			break;
 		case DLL_THREAD_DETACH:
+
 			break;
 		case DLL_PROCESS_DETACH:
 			lb_uninit();
+
 			break;
 	}
 	return true;
