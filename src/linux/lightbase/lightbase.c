@@ -34,15 +34,15 @@ void load_plugins()
 	DIR *dir = opendir(PLUGIN_DIR);
 	if (!dir) {
 		if (errno == ENOENT) {
-			printf("[LightBase] [INFO] No plugins folder found, creating...\n");
+			lb_preinit_logger(LEVEL_WARN, "No plugins folder found, creating...\n");
 			ret = mkdir("plugins", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 			if (ret) {
-				printf("[LightBase] [INFO] Create plugins folder failed: %s.\n", strerror(errno));
+				lb_preinit_logger(LEVEL_ERROR, "Create plugins folder failed: %s.\n", strerror(errno));
 			}
 
 			return;
 		} else {
-			printf("[LightBase] [ERROR] Open plugins folder failed: %s.\n", strerror(errno));
+			lb_preinit_logger(LEVEL_ERROR, "Open plugins folder failed: %s.\n", strerror(errno));
 
 			return;
 		}
@@ -59,12 +59,15 @@ void load_plugins()
 		if (f_name_len >= 3) {
 			f_name_suffix = dir_ctx->d_name + f_name_len - 3;
 			if (!strcmp(f_name_suffix, ".so")) {
-				printf("[LightBase] [INFO] Loading %s.\n", dir_ctx->d_name);
+				lb_preinit_logger(LEVEL_INFO, "Loading %s.\n", dir_ctx->d_name);
 				void *ret_ = dlopen(plugin_path, RTLD_NOW);
 				if (!ret_) {
-					printf("[LightBase] [ERROR] Load plugin %s failed: %s.\n", dir_ctx->d_name, dlerror());
+					lb_preinit_logger(LEVEL_INFO, "Load plugin %s failed: %s.\n", dir_ctx->d_name, dlerror());
+
+					continue;
 				}
-				printf("[LightBase] [INFO] Loaded %s.\n", dir_ctx->d_name);
+
+				lb_preinit_logger(LEVEL_INFO, "Loaded %s.\n", dir_ctx->d_name);
 			}
 		} else {
 			continue;
