@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <errno.h>
 #include <dlfcn.h>
@@ -7,6 +8,25 @@
 
 #include <universal/lightbase/lightbase.h>
 #include <universal/lightbase/symbol.h>
+
+const char *g_log_level_str[] = {
+	"ERROR",
+	"WARN",
+	"INFO",
+	"DEBUG",
+	"TRACE"
+};
+
+int lb_preinit_logger(int in_level, const char *in_fmt, ...)
+{
+	va_list va;
+	va_start(va, in_fmt);
+	printf("[" LOADER_NAME "] [%s] ", g_log_level_str[in_level]);
+	int ret = vprintf(in_fmt, va);
+	va_end(va);
+
+	return ret;
+}
 
 void load_plugins()
 {
