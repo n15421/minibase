@@ -58,7 +58,7 @@ def printc(text, color=""):
 
 
 def downloadCVDUMP():
-    url = "https://raw.githubusercontent.com/microsoft/microsoft-pdb/master/cvdump/cvdump.exe"
+    url = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/microsoft/microsoft-pdb/master/cvdump/cvdump.exe"
     if not is_executable("cvdump.exe"):
         for retries in range(3):
             print()
